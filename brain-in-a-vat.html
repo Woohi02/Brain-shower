@@ -1237,12 +1237,11 @@ function spawnRipple(color) {
 
 // ─── Brain anim ───────────────────────────────────────
 function triggerAnim(name) {
-  brainEl.className = brainEl.className.replace(/state-\S+|do-\S+/g, '').trim();
+  brainEl.className = brainEl.className.replace(/do-\S+/g, '').trim();
   void brainEl.offsetWidth;
   brainEl.classList.add(`do-${name}`);
   setTimeout(() => {
     brainEl.classList.remove(`do-${name}`);
-    brainEl.classList.add(`state-${phase}`);
     if (showerMode) brainEl.classList.add('scrub-mode');
   }, 950);
 }
