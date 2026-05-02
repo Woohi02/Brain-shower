@@ -215,36 +215,12 @@ body {
   display: grid;
   place-items: center;
   pointer-events: none;
-  animation: scene-float ease-in-out infinite;
   filter: drop-shadow(0 16px 28px rgba(0,0,0,0.12));
+  will-change: transform, opacity;
 }
 .scene-bubble {
-  width: clamp(58px, 8vw, 108px);
-  height: clamp(58px, 8vw, 108px);
-  border-radius: 34%;
-  background: rgba(255,255,255,0.62);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.76), 0 18px 40px rgba(0,0,0,0.08);
-  font-size: clamp(1.8rem, 4.4vw, 4rem);
-}
-.scene-pill {
-  min-width: 92px;
-  min-height: 42px;
-  padding: 10px 18px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.72);
-  color: #111;
-  font-size: 0.82rem;
-  font-weight: 900;
-  letter-spacing: 0;
-}
-.scene-tile {
-  width: clamp(118px, 15vw, 210px);
-  height: clamp(86px, 11vw, 154px);
-  border-radius: 28px;
-  background: rgba(255,255,255,0.48);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.62), 0 20px 50px rgba(0,0,0,0.1);
-  color: rgba(20,20,20,0.78);
-  font-size: clamp(1.8rem, 4vw, 4.6rem);
+  font-size: clamp(2.1rem, 5.4vw, 5.7rem);
+  line-height: 1;
 }
 .scene-line {
   position: absolute;
@@ -982,6 +958,7 @@ header p  { max-width: 230px; font-size: 0.72rem; color: #7f7f7a; margin-top: 8p
   91%        {background:rgba(130,0,0,0.06)}
 }
 .sc-bitter .sc-emoji { animation: horror-appear 5s ease infinite; }
+.sc-bitter .scene-object { filter: drop-shadow(0 18px 28px rgba(0,0,0,0.32)); }
 @keyframes horror-appear {
   0%,15%  {opacity:0; transform:scale(0.5) rotate(-5deg)}
   25%,65% {opacity:1; transform:scale(1) rotate(0)       }
@@ -1439,9 +1416,146 @@ function updateStrokeDots() {
   });
 }
 
+// ─── Scene icon physics ───────────────────────────────
+const scenePhysics = {
+  raf: 0,
+  type: 'idle',
+  bodies: [],
+  pointer: { x: -9999, y: -9999, active: false },
+  stop() {
+    cancelAnimationFrame(this.raf);
+    this.raf = 0;
+    this.bodies = [];
+  },
+  start(type) {
+    this.stop();
+    this.type = type;
+    const rect = mScreen.getBoundingClientRect();
+    this.bodies = [...mScreen.querySelectorAll('[data-scene-icon]')].map((el, i) => {
+      const x = rect.width * Number(el.dataset.x) / 100;
+      const y = rect.height * Number(el.dataset.y) / 100;
+      const size = Number(el.dataset.size || 1);
+      return {
+        el,
+        homeX: x,
+        homeY: y,
+        x,
+        y,
+        vx: (Math.sin(i * 2.1) * 0.55),
+        vy: (Math.cos(i * 1.7) * 0.55),
+        r: 34 * size,
+        size,
+        seed: i * 0.73,
+      };
+    });
+    if (!this.bodies.length) return;
+    this.tick(performance.now());
+  },
+  tick(now) {
+    const rect = mScreen.getBoundingClientRect();
+    const t = now / 1000;
+
+    for (const b of this.bodies) {
+      let ax = (b.homeX - b.x) * 0.003;
+      let ay = (b.homeY - b.y) * 0.003;
+
+      if (this.type === 'salty') {
+        ax += Math.sin(t * 0.9 + b.seed) * 0.018;
+        ay += 0.022;
+      } else if (this.type === 'sweet') {
+        ax += Math.sin(t * 2.2 + b.seed) * 0.05;
+        ay += Math.cos(t * 3.3 + b.seed) * 0.08;
+      } else if (this.type === 'spicy') {
+        ax += (Math.random() - 0.5) * 0.32;
+        ay += (Math.random() - 0.5) * 0.32;
+      } else if (this.type === 'bitter') {
+        ax += Math.sin(t * 0.7 + b.seed) * 0.016;
+        ay += Math.cos(t * 0.55 + b.seed) * 0.012;
+      } else if (this.type === 'sour') {
+        const kick = Math.sin(t * 8 + b.seed);
+        ax += Math.sign(kick) * 0.055;
+        ay += Math.cos(t * 7 + b.seed) * 0.055;
+      } else if (this.type === 'shower') {
+        ax += Math.sin(t * 0.8 + b.seed) * 0.018;
+        ay += Math.cos(t * 0.9 + b.seed) * 0.018;
+      }
+
+      if (this.pointer.active) {
+        const px = this.pointer.x - rect.left;
+        const py = this.pointer.y - rect.top;
+        const dx = b.x - px;
+        const dy = b.y - py;
+        const d2 = dx * dx + dy * dy;
+        const range = this.type === 'spicy' || this.type === 'sour' ? 190 : 150;
+        if (d2 < range * range) {
+          const d = Math.sqrt(d2) || 1;
+          const push = (1 - d / range) * (this.type === 'spicy' ? 2.8 : this.type === 'sour' ? 2.2 : 1.6);
+          b.vx += (dx / d) * push;
+          b.vy += (dy / d) * push;
+        }
+      }
+
+      b.vx = (b.vx + ax) * 0.93;
+      b.vy = (b.vy + ay) * 0.93;
+      b.x += b.vx;
+      b.y += b.vy;
+
+      if (b.x < b.r) { b.x = b.r; b.vx = Math.abs(b.vx) * 0.72; }
+      if (b.x > rect.width - b.r) { b.x = rect.width - b.r; b.vx = -Math.abs(b.vx) * 0.72; }
+      if (b.y < b.r) { b.y = b.r; b.vy = Math.abs(b.vy) * 0.72; }
+      if (b.y > rect.height - b.r) { b.y = rect.height - b.r; b.vy = -Math.abs(b.vy) * 0.72; }
+
+      const rot = Math.max(-18, Math.min(18, b.vx * 3));
+      const scalePulse =
+        this.type === 'sweet' ? 1 + Math.sin(t * 4 + b.seed) * 0.08 :
+        this.type === 'spicy' ? 1 + Math.sin(t * 14 + b.seed) * 0.06 :
+        this.type === 'sour' ? 1 + Math.max(0, Math.sin(t * 8 + b.seed)) * 0.12 :
+        1;
+      const opacity =
+        this.type === 'bitter' ? 0.22 + Math.max(0, Math.sin(t * 2.8 + b.seed)) * 0.62 :
+        this.type === 'salty' ? 0.7 :
+        0.82;
+      b.el.style.opacity = opacity.toFixed(3);
+      b.el.style.transform = `translate3d(${b.x - b.homeX}px, ${b.y - b.homeY}px, 0) rotate(${rot}deg) scale(${(b.size * scalePulse).toFixed(3)})`;
+    }
+    this.raf = requestAnimationFrame(this.tick.bind(this));
+  },
+  nudge(clientX, clientY, strength = 7) {
+    const rect = mScreen.getBoundingClientRect();
+    const px = clientX - rect.left;
+    const py = clientY - rect.top;
+    for (const b of this.bodies) {
+      const dx = b.x - px;
+      const dy = b.y - py;
+      const d = Math.sqrt(dx * dx + dy * dy) || 1;
+      if (d < 170) {
+        const hit = (1 - d / 170) * strength;
+        b.vx += (dx / d) * hit;
+        b.vy += (dy / d) * hit;
+      }
+    }
+  },
+};
+
+document.addEventListener('pointermove', e => {
+  scenePhysics.pointer.x = e.clientX;
+  scenePhysics.pointer.y = e.clientY;
+  scenePhysics.pointer.active = true;
+});
+document.addEventListener('pointerdown', e => {
+  scenePhysics.pointer.x = e.clientX;
+  scenePhysics.pointer.y = e.clientY;
+  scenePhysics.pointer.active = true;
+  scenePhysics.nudge(e.clientX, e.clientY, 9);
+});
+document.addEventListener('pointerleave', () => {
+  scenePhysics.pointer.active = false;
+});
+
 // ─── Monitor scene renderer ───────────────────────────
 function renderScene(type) {
   monitorEl.classList.add('visible');
+  scenePhysics.stop();
 
   function rain(n) {
     let h = '';
@@ -1469,12 +1583,8 @@ function renderScene(type) {
   function objects(items) {
     return items.map((it, i) => {
       const cls = it.cls || 'scene-bubble';
-      const dur = it.dur || (4.5 + i * 0.35);
-      const delay = it.delay || (-i * 0.7);
-      const dx = it.dx || ((i % 2 ? -1 : 1) * (12 + i * 3)) + 'px';
-      const dy = it.dy || (-(16 + i * 4)) + 'px';
-      const rot = it.rot || ((i % 2 ? -1 : 1) * (4 + i * 2)) + 'deg';
-      return `<div class="scene-object ${cls}" style="left:${it.x}%;top:${it.y}%;--dx:${dx};--dy:${dy};--rot:${rot};animation-duration:${dur}s;animation-delay:${delay}s">${it.text}</div>`;
+      const size = it.size || 1;
+      return `<div class="scene-object ${cls}" data-scene-icon data-x="${it.x}" data-y="${it.y}" data-size="${size}" data-seed="${i}" style="left:${it.x}%;top:${it.y}%">${it.text}</div>`;
     }).join('');
   }
 
@@ -1487,33 +1597,39 @@ function renderScene(type) {
   }
 
   const scenes = {
-    salty: `<div class="sc sc-salty"><div class="sc-tag">드라마</div>${rain(34)}${objects([
-      {text:'😢', x:12, y:22}, {text:'☔', x:76, y:18}, {text:'💧', x:22, y:70}, {text:'🌧️', x:82, y:68},
-      {text:'회상 장면', x:56, y:18, cls:'scene-pill'}, {text:'눈물샘', x:62, y:76, cls:'scene-pill'}
+    salty: `<div class="sc sc-salty">${rain(44)}${objects([
+      {text:'😢', x:9, y:20, size:1.2}, {text:'💧', x:19, y:62}, {text:'☔', x:30, y:32}, {text:'🌧️', x:43, y:72, size:1.15},
+      {text:'😞', x:55, y:22}, {text:'💦', x:68, y:56}, {text:'😭', x:81, y:28, size:1.25}, {text:'☁️', x:91, y:74},
+      {text:'💧', x:12, y:82}, {text:'😢', x:38, y:50}, {text:'🌧️', x:62, y:84}, {text:'☔', x:84, y:48}
     ])}<div class="sc-emoji">😢</div></div>`,
-    sweet: `<div class="sc sc-sweet"><div class="sc-tag">엔터테인먼트</div>${fireworks(18)}${objects([
-      {text:'🍬', x:12, y:26}, {text:'🎉', x:76, y:20}, {text:'🍭', x:26, y:72}, {text:'✨', x:84, y:68},
-      {text:'GOOD NEWS', x:52, y:18, cls:'scene-pill'}, {text:'HAPPY LOOP', x:62, y:78, cls:'scene-pill'}
+    sweet: `<div class="sc sc-sweet">${fireworks(24)}${objects([
+      {text:'🍬', x:10, y:28}, {text:'🎉', x:22, y:66, size:1.18}, {text:'🍭', x:35, y:22}, {text:'✨', x:48, y:76},
+      {text:'😄', x:58, y:34, size:1.2}, {text:'💖', x:72, y:20}, {text:'🌈', x:84, y:66, size:1.1}, {text:'🥳', x:92, y:38},
+      {text:'🍬', x:16, y:82}, {text:'✨', x:38, y:54}, {text:'🎊', x:66, y:82}, {text:'🍭', x:80, y:50}
     ])}<div class="sc-emoji">🎉</div></div>`,
-    spicy: `<div class="sc sc-spicy"><div class="sc-tag">숏폼</div>${motionLines(7)}<div class="glow-center"></div><div class="pulse-ring" style="width:28px;height:28px;animation-delay:0s"></div><div class="pulse-ring" style="width:28px;height:28px;animation-delay:0.37s"></div><div class="pulse-ring" style="width:28px;height:28px;animation-delay:0.74s"></div>${objects([
-      {text:'🔥', x:12, y:24}, {text:'⚡', x:80, y:19}, {text:'🌶️', x:22, y:70}, {text:'▶', x:82, y:68, cls:'scene-tile'},
-      {text:'NEXT CLIP', x:55, y:17, cls:'scene-pill'}, {text:'SWIPE SWIPE', x:58, y:78, cls:'scene-pill'}
+    spicy: `<div class="sc sc-spicy">${motionLines(7)}<div class="glow-center"></div><div class="pulse-ring" style="width:28px;height:28px;animation-delay:0s"></div><div class="pulse-ring" style="width:28px;height:28px;animation-delay:0.37s"></div><div class="pulse-ring" style="width:28px;height:28px;animation-delay:0.74s"></div>${objects([
+      {text:'🔥', x:9, y:20, size:1.25}, {text:'⚡', x:20, y:72}, {text:'🌶️', x:31, y:34}, {text:'💥', x:44, y:80, size:1.2},
+      {text:'🚨', x:58, y:24}, {text:'🔥', x:69, y:64}, {text:'⚡', x:82, y:18, size:1.18}, {text:'🤯', x:92, y:74, size:1.24},
+      {text:'🌶️', x:14, y:48}, {text:'💥', x:36, y:58}, {text:'🔥', x:62, y:86}, {text:'⚡', x:84, y:45}
     ])}<div class="sc-emoji">🔥</div></div>`,
-    bitter: `<div class="sc sc-bitter"><div class="sc-tag">공포</div><div class="blood-flash"></div>${objects([
-      {text:'👁️', x:14, y:24}, {text:'⛓️', x:78, y:20}, {text:'🕳️', x:22, y:72}, {text:'...', x:80, y:70, cls:'scene-tile'},
-      {text:'DO NOT OPEN', x:50, y:18, cls:'scene-pill'}, {text:'STATIC', x:62, y:78, cls:'scene-pill'}
+    bitter: `<div class="sc sc-bitter"><div class="blood-flash"></div>${objects([
+      {text:'👁️', x:10, y:24, size:1.22}, {text:'⛓️', x:21, y:72}, {text:'🕳️', x:33, y:30, size:1.1}, {text:'🫣', x:46, y:78},
+      {text:'🕯️', x:57, y:22}, {text:'👻', x:70, y:64, size:1.25}, {text:'🦷', x:82, y:34}, {text:'🖤', x:92, y:78},
+      {text:'👁️', x:14, y:52}, {text:'⛓️', x:40, y:58}, {text:'🕳️', x:66, y:86}, {text:'👻', x:84, y:52}
     ])}<div class="sc-emoji">👁️</div></div>`,
     sour: `<div class="sc sc-sour">${motionLines(5)}${objects([
-      {text:'😱', x:12, y:22}, {text:'⚠️', x:78, y:18}, {text:'🍋', x:24, y:72}, {text:'LIVE', x:80, y:68, cls:'scene-tile'},
-      {text:'BREAKING', x:52, y:17, cls:'scene-pill'}, {text:'ALERT', x:62, y:78, cls:'scene-pill'}
-    ])}<div class="sc-emoji">😱</div><div class="news-bar"><span class="news-badge">속보</span><span class="ticker-text">충격적인 소식 · 당신의 뇌에 전달 중 · 지금 바로 확인하세요 · </span></div></div>`,
-    shower: `<div class="sc sc-shower"><div class="sc-tag">명상</div><div class="ripple-ring" style="animation-delay:0s"></div><div class="ripple-ring" style="animation-delay:0.6s"></div><div class="ripple-ring" style="animation-delay:1.2s"></div><div class="ripple-ring" style="animation-delay:1.8s"></div>${objects([
-      {text:'🌿', x:14, y:24}, {text:'💧', x:78, y:20}, {text:'🫧', x:24, y:72}, {text:'숨', x:80, y:68, cls:'scene-tile'},
-      {text:'BREATHE IN', x:52, y:18, cls:'scene-pill'}, {text:'BREATHE OUT', x:62, y:78, cls:'scene-pill'}
-    ])}<div class="sc-emoji">🌿</div><div class="shower-label">마음 정화 중</div></div>`,
+      {text:'😱', x:9, y:22, size:1.25}, {text:'⚠️', x:20, y:70}, {text:'🍋', x:32, y:28}, {text:'💢', x:45, y:76},
+      {text:'‼️', x:58, y:24, size:1.2}, {text:'😳', x:69, y:62}, {text:'⚡', x:82, y:18}, {text:'🍋', x:92, y:72},
+      {text:'🚨', x:14, y:50}, {text:'😵', x:36, y:58}, {text:'⚠️', x:62, y:84}, {text:'💥', x:84, y:46}
+    ])}<div class="sc-emoji">😱</div></div>`,
+    shower: `<div class="sc sc-shower"><div class="ripple-ring" style="animation-delay:0s"></div><div class="ripple-ring" style="animation-delay:0.6s"></div><div class="ripple-ring" style="animation-delay:1.2s"></div><div class="ripple-ring" style="animation-delay:1.8s"></div>${objects([
+      {text:'🌿', x:14, y:24}, {text:'💧', x:78, y:20}, {text:'🫧', x:24, y:72}, {text:'💧', x:80, y:68},
+      {text:'🌿', x:52, y:18}, {text:'🫧', x:62, y:78}
+    ])}<div class="sc-emoji">🌿</div></div>`,
   };
 
   mScreen.innerHTML = scenes[type] || `<div class="sc sc-idle"><span class="idle-cursor">_</span></div>`;
+  scenePhysics.start(type);
 }
 
 // ─── Reaction message ─────────────────────────────────
