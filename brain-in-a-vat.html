@@ -117,6 +117,27 @@ body {
   white-space: nowrap;
   pointer-events: none;
 }
+.hero-word.is-message {
+  max-width: calc(100% - var(--page-margin) * 2);
+  font-size: clamp(3.1rem, 6vw, 5.9rem);
+  line-height: 0.96;
+  white-space: normal;
+  text-wrap: balance;
+}
+.hero-word.is-typing::after {
+  content: '';
+  display: inline-block;
+  width: 0.08em;
+  height: 0.74em;
+  margin-left: 0.08em;
+  background: currentColor;
+  vertical-align: -0.03em;
+  animation: title-caret 0.72s steps(1) infinite;
+}
+@keyframes title-caret {
+  0%, 48% { opacity: 1; }
+  49%, 100% { opacity: 0; }
+}
 
 .scene-backdrop {
   position: absolute;
@@ -1023,7 +1044,7 @@ header p  { max-width: 230px; font-size: 0.72rem; color: #7f7f7a; margin-top: 8p
 <div class="scene-backdrop" id="mScreen" aria-hidden="true">
   <div class="sc sc-idle"><span class="idle-cursor">_</span></div>
 </div>
-<div class="hero-word">Brain Shower</div>
+<div class="hero-word" id="heroWord">Brain Shower</div>
 
 <header>
   <h1>통 속의 뇌</h1>
@@ -1201,6 +1222,14 @@ const FOOD = {
   sour:   { anim:'jolt',   msg:'⚡ 충격!',                   glow:'rgba(255,214,0,0.3)'    },
 };
 
+const FOOD_TITLES = {
+  salty:  '눈물이 짭짤해서 자꾸 생각나.',
+  sweet:  '좋은 것만 계속 넣어줘, 더 더!',
+  spicy:  '머릿속이 너무 빨라, 멈출 수 없어.',
+  bitter: '무서운 장면이 아직도 남아 있어.',
+  sour:   '방금 본 충격이 뇌를 깨웠어.',
+};
+
 const STATES = {
   normal: {
     gs1:'#ffdfe8', gs2:'#d95f72', fold:'#b94e62',
@@ -1258,6 +1287,7 @@ const brainSvg   = document.getElementById('brainSvg');
 const brainImg   = document.getElementById('brainImg');
 const stateBadge = document.getElementById('stateBadge');
 const msgEl      = document.getElementById('msgEl');
+const heroWord   = document.getElementById('heroWord');
 const dotsEl     = document.getElementById('dotsEl');
 const glowEl     = document.getElementById('glow');
 const gs1        = document.getElementById('gs1');
@@ -1459,6 +1489,28 @@ function showMsg(text) {
   msgTimer = setTimeout(() => msgEl.classList.remove('show'), 2600);
 }
 
+let heroTypeTimer;
+function typeHero(text) {
+  clearTimeout(heroTypeTimer);
+  heroWord.textContent = '';
+  heroWord.classList.toggle('is-message', text !== 'Brain Shower');
+  heroWord.classList.add('is-typing');
+
+  let i = 0;
+  const tick = () => {
+    heroWord.textContent = text.slice(0, i);
+    if (i < text.length) {
+      i++;
+      heroTypeTimer = setTimeout(tick, 52);
+    } else {
+      heroTypeTimer = setTimeout(() => {
+        heroWord.classList.remove('is-typing');
+      }, 900);
+    }
+  };
+  tick();
+}
+
 // ─── Ripple ───────────────────────────────────────────
 function spawnRipple(color) {
   const r = document.createElement('div');
@@ -1489,6 +1541,7 @@ function feed(type) {
   triggerAnim(cfg.anim);
   spawnRipple(STATES[phase].fold);
   showMsg(cfg.msg);
+  typeHero(FOOD_TITLES[type] || 'Brain Shower');
   glowEl.style.background = `radial-gradient(ellipse, ${cfg.glow} 0%, rgba(0,0,0,0.035) 48%, transparent 72%)`;
 }
 
@@ -1499,6 +1552,7 @@ function triggerClean() {
   triggerAnim('shower');
   spawnRipple('#4dd0e1');
   renderScene('shower');
+  typeHero('Brain Shower');
   brainSvg.style.filter = 'drop-shadow(0 10px 36px rgba(77,208,225,0.75))';
   setTimeout(() => {
     brainSvg.style.filter = `drop-shadow(0 10px 28px ${STATES[phase].shadow})`;
