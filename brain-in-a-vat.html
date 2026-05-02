@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>통 속의 뇌</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --page-margin: 34px;
+  --bg: #ffffff;
+  --surface: #fffdf8;
+  --surface-soft: rgba(255,255,255,0.86);
+  --text: #262626;
+  --muted: #819082;
+  --green: #93c974;
+  --green-deep: #62894e;
+  --blue: #35a9ff;
+  --cream: #f8f4eb;
+  --shadow: 0 24px 60px rgba(20,71,38,0.22);
+  --line: rgba(39,39,39,0.08);
+}
+
+body {
+  min-height: 100vh;
+  background: #dededc;
+  font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 34px;
+  user-select: none;
+  overflow: hidden;
+  color: var(--text);
+}
+
+.web-page {
+  width: min(1180px, calc(100vw - 68px));
+  height: min(820px, calc(100vh - 68px));
+  min-height: 660px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 52% 36%, #ffffff 0%, #f8f8f7 42%, #efefed 100%);
+  box-shadow: 0 26px 70px rgba(0,0,0,0.13);
+  display: grid;
+  grid-template-rows: 84px 1fr 244px;
+  padding: 0 var(--page-margin) 32px;
+}
+
+.side-nav {
+  position: absolute;
+  top: 42px; left: var(--page-margin);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: #8a8a86;
+}
+.side-nav strong {
+  color: #151515;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.side-nav strong::after {
+  content: '';
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #101010;
+  box-shadow: inset -5px -5px 0 rgba(255,255,255,0.08);
+}
+
+.top-brand {
+  position: absolute;
+  top: 42px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.top-icons {
+  position: absolute;
+  top: 38px; right: var(--page-margin);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: #222;
+}
+.top-icons span {
+  width: 18px; height: 18px;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.hero-word {
+  position: absolute;
+  left: var(--page-margin);
+  right: var(--page-margin);
+  top: 192px;
+  z-index: 1;
+  font-size: 8rem;
+  line-height: 0.82;
+  font-weight: 950;
+  letter-spacing: 0;
+  color: rgba(17,17,17,0.93);
+  white-space: normal;
+  pointer-events: none;
+}
+.hero-word .hw-line {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.hero-word.is-message {
+  max-width: calc(100% - var(--page-margin) * 2);
+  font-size: clamp(3.1rem, 6vw, 5.9rem);
+  line-height: 0.96;
+  white-space: normal;
+  text-wrap: balance;
+  text-align: left;
+}
+.hero-word.msg-salty {
+  top: 126px;
+  right: auto;
+  max-width: min(430px, 43%);
+  font-size: clamp(3rem, 5.6vw, 5.4rem);
+}
+.hero-word.msg-sweet {
+  top: 124px;
+  right: auto;
+  max-width: min(430px, 42%);
+  font-size: clamp(3rem, 5.5vw, 5.3rem);
+}
+.hero-word.msg-spicy {
+  top: 106px;
+  right: auto;
+  max-width: min(620px, 58%);
+  font-size: clamp(3rem, 5.2vw, 5rem);
+}
+.hero-word.msg-bitter {
+  top: 96px;
+  right: auto;
+  max-width: min(600px, 56%);
+  font-size: clamp(2.55rem, 4.85vw, 4.7rem);
+  line-height: 0.92;
+}
+.hero-word.msg-sour {
+  top: 132px;
+  right: auto;
+  max-width: min(420px, 40%);
+  font-size: clamp(3rem, 5.6vw, 5.4rem);
+}
+.hero-word.is-typing::after {
+  content: '';
+  display: inline-block;
+  width: 0.08em;
+  height: 0.74em;
+  margin-left: 0.08em;
+  background: currentColor;
+  vertical-align: -0.03em;
+  animation: title-caret 0.72s steps(1) infinite;
+}
+@keyframes title-caret {
+  0%, 48% { opacity: 1; }
+  49%, 100% { opacity: 0; }
+}
+
+.scene-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  background: transparent;
+  pointer-events: none;
+}
+/* Scrub flash overlay — shows bg-shower.png while dragging */
+.scrub-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: url('bg-shower.png') center top / 100% auto no-repeat;
+  background-color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.scrub-flash.active {
+  opacity: 1;
+  transition: opacity 0.08s ease;
+}
+.scrub-flash.fading {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.scene-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background:
+    none;
+}
+.scene-backdrop .sc {
+  inset: -1px;
+}
+.scene-backdrop .sc-idle {
+  background: transparent;
+}
+.scene-backdrop .idle-cursor {
+  display: none;
+}
+.scene-backdrop .sc-tag {
+  top: 126px;
+  left: 44px;
+  font-size: 0.68rem;
+  background: rgba(255,255,255,0.58);
+}
+.scene-backdrop .sc-emoji {
+  font-size: clamp(7rem, 19vw, 18rem);
+  opacity: 0.16;
+  filter: blur(0.2px) saturate(0.95);
+}
+.sc-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+/* Dark scene text overrides */
+.web-page[data-theme="dark"] header h1,
+.web-page[data-theme="dark"] header p,
+.web-page[data-theme="dark"] .hero-word,
+.web-page[data-theme="dark"] .top-brand,
+.web-page[data-theme="dark"] .top-icons {
+  color: #ffffff;
+  transition: color 0.4s ease;
+}
+.web-page[data-theme="dark"] header p {
+  color: rgba(255,255,255,0.7);
+}
+.scene-object {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  filter: drop-shadow(0 16px 28px rgba(0,0,0,0.12));
+  will-change: transform, opacity;
+}
+.scene-bubble {
+  font-size: clamp(2.1rem, 5.4vw, 5.7rem);
+  line-height: 1;
+}
+.scene-line {
+  position: absolute;
+  z-index: 3;
+  height: 2px;
+  width: clamp(120px, 18vw, 260px);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.5);
+  transform-origin: center;
+  animation: scene-slide linear infinite;
+}
+@keyframes scene-float {
+  0%,100% { transform: translate3d(0,0,0) rotate(var(--rot, 0deg)); }
+  50% { transform: translate3d(var(--dx, 0px), var(--dy, -18px), 0) rotate(calc(var(--rot, 0deg) + 5deg)); }
+}
+@keyframes scene-slide {
+  from { transform: translateX(-18vw) rotate(var(--rot, 0deg)); opacity: 0; }
+  18%,80% { opacity: 1; }
+  to { transform: translateX(118vw) rotate(var(--rot, 0deg)); opacity: 0; }
+}
+.scene-backdrop .drop {
+  width: 2px;
+  height: 28px;
+  opacity: 0.7;
+}
+.scene-backdrop .firework {
+  opacity: 0.72;
+}
+.scene-backdrop .glow-center {
+  width: 260px;
+  height: 260px;
+}
+.scene-backdrop .pulse-ring {
+  width: 130px !important;
+  height: 130px !important;
+}
+.scene-backdrop .news-bar {
+  bottom: 42px;
+  left: 42px;
+  right: 42px;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.7rem;
+}
+.scene-backdrop .shower-label {
+  bottom: 92px;
+  font-size: 0.72rem;
+}
+
+.glow {
+  position: fixed;
+  width: min(560px, 78vw); height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.09) 0%, rgba(0,0,0,0.035) 48%, transparent 72%);
+  top: 53%; left: 50%;
+  transform: translate(-50%,-50%) scaleX(1.08);
+  pointer-events: none;
+  transition: background 1.2s ease;
+  z-index: 0;
+}
+
+header {
+  left: 42px;
+  bottom: 294px;
+  position: absolute;
+  z-index: 5;
+  color: var(--text);
+  align-self: end;
+}
+header h1 { font-size: 2rem; font-weight: 900; color: #101010; letter-spacing: -0.02em; line-height: 1; }
+header p  { max-width: 280px; font-size: 0.75rem; color: #7f7f7a; margin-top: 6px; font-weight: 500; line-height: 1.5; white-space: nowrap; }
+
+/* ── Arena ── */
+.arena {
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 0;
+}
+
+.stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 34px;
+  flex-wrap: wrap;
+  transform: translateY(18px);
+}
+
+/* ── Monitor ── */
+.monitor {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 0;
+  overflow: visible;
+  opacity: 0;
+  transform: translateX(-20px) scale(0.9);
+  pointer-events: none;
+  transition: width 0.55s ease, opacity 0.55s ease, transform 0.55s cubic-bezier(0.34,1.56,0.64,1);
+}
+.monitor.visible { width: 160px; opacity: 1; transform: none; }
+.m-body {
+  background: #161616;
+  border-radius: 28px;
+  padding: 12px 10px 14px;
+  width: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,0.08),
+    inset 0 -8px 18px rgba(255,255,255,0.05),
+    0 18px 40px rgba(0,0,0,0.25);
+}
+.m-screen {
+  width: 138px; height: 122px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  background: #eef8ff;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+}
+.m-screen::before {
+  content: '';
+  position: absolute;
+  top: 7px; left: 50%;
+  width: 44px; height: 12px;
+  border-radius: 999px;
+  background: #080808;
+  transform: translateX(-50%);
+  z-index: 20;
+}
+.m-footer { display: flex; align-items: center; justify-content: center; width: 100%; }
+.m-cam {
+  width: 32px; height: 3px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.36);
+  box-shadow: none;
+  opacity: 0.9;
+}
+.m-neck,
+.m-base { display: none; }
+
+/* ── Brain area ── */
+.brain-area {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 44px;
+}
+.state-badge {
+  position: absolute;
+  top: 2px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.16rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #6f6f6b;
+  white-space: nowrap;
+  transition: color 0.7s ease;
+  text-transform: uppercase;
+}
+.brain-container {
+  position: relative;
+  width: min(470px, 82vw); height: min(390px, 68vw);
+  filter: drop-shadow(0 28px 34px rgba(0,0,0,0.12));
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.brain-container.drag-over  { transform: scale(1.07); }
+.brain-container.scrub-mode { cursor: none; }
+
+/* Blue tint while scrubbing */
+.brain-container.scrubbing .brain-svg,
+.brain-container.scrubbing .brain-character-img {
+  filter: drop-shadow(0 8px 28px rgba(77,208,225,0.65)) !important;
+  transition: filter 0.1s ease !important;
+}
+
+.brain-svg {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 16px 28px rgba(133,45,61,0.28));
+  transition: filter 0.9s ease;
+  pointer-events: none;
+}
+.brain-svg.fallback-visible { display: block; }
+.brain-character-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  visibility: hidden;
+  filter: drop-shadow(0 16px 28px rgba(0,0,0,0.12));
+  transition: filter 0.9s ease, transform 0.9s ease;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.brain-character-img.is-loaded { visibility: visible; }
+.brain-character-img.is-fallback {
+  display: none;
+}
+.brain-container.state-overstimulated .brain-character-img {
+  filter: drop-shadow(0 16px 28px rgba(201,87,24,0.18));
+}
+.brain-container.state-rotten .brain-character-img {
+  filter: drop-shadow(0 16px 28px rgba(72,104,28,0.18));
+}
+.brain-container.state-overstimulated.scrubbing .brain-character-img {
+  filter: drop-shadow(0 8px 28px rgba(77,208,225,0.65)) !important;
+}
+.brain-container.state-rotten.scrubbing .brain-character-img {
+  filter: drop-shadow(0 8px 28px rgba(77,208,225,0.65)) !important;
+}
+.reaction-msg {
+  position: absolute;
+  top: -46px; left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 0.74rem;
+  color: var(--text);
+  white-space: nowrap;
+  box-shadow: 0 14px 34px rgba(35,77,47,0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 10;
+}
+.reaction-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.dots {
+  position: absolute;
+  bottom: -24px; left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 7px;
+}
+.dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.34);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.24);
+  transition: background 0.4s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.dot.fed        { background: #ffd0dc; transform: scale(1.15); }
+.dot.fed.hot    { background: #ff8c42; }
+.dot.fed.rotten { background: #9ac041; }
+
+.ripple {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 130px; height: 130px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0;
+  pointer-events: none;
+  animation: ripple-out 0.65s ease-out forwards;
+}
+@keyframes ripple-out {
+  0%  { transform: translate(-50%,-50%) scale(0); opacity: 0.6; }
+  100%{ transform: translate(-50%,-50%) scale(2); opacity: 0;   }
+}
+
+/* ── Tray ── */
+.tray {
+  width: 100%;
+  max-width: none;
+  background: rgba(255,255,255,0.68);
+  border-radius: 26px;
+  padding: 14px 18px 16px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.82), 0 18px 42px rgba(0,0,0,0.08);
+  position: relative;
+  z-index: 1;
+  border: 1px solid rgba(20,20,20,0.05);
+  min-width: 0;
+}
+
+/* Tabs */
+.tab-bar {
+  display: flex;
+  gap: 7px;
+  background: rgba(238,238,233,0.92);
+  border-radius: 20px;
+  padding: 4px;
+  margin-bottom: 12px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px 6px;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  font-size: 0.84rem;
+  font-weight: 850;
+  color: #8d9b8d;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.tab-btn.active {
+  background: #111;
+  color: var(--text);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+.tab-panel { display: block; }
+.tab-panel.hidden { display: none; }
+
+/* Food items */
+.items-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: clamp(12px, 3vw, 32px);
+}
+.food-item {
+  flex: 1;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: grab;
+}
+.food-item:active { cursor: grabbing; }
+.food-icon {
+  width: auto;
+  aspect-ratio: auto;
+  max-width: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.95rem;
+  line-height: 1;
+  background: transparent;
+  box-shadow: none;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.food-item:hover .food-icon {
+  transform: translateY(-5px) scale(1.06);
+}
+.food-label    { font-size: 0.78rem; font-weight: 850; color: #464b46; text-align: center; white-space: nowrap; }
+.food-sublabel { font-size: 0.58rem; color: #a9b1a8; text-align: center; margin-top: -3px; }
+
+/* ── Shower panel ── */
+.shower-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0 2px;
+}
+.shower-hint {
+  font-size: 0.9rem;
+  color: #718271;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.sp-dots {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.sp-dot {
+  width: 17px; height: 17px;
+  border-radius: 50%;
+  background: #eef5e8;
+  border: 2px solid #d8e6cf;
+  transition: background 0.35s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease;
+}
+.sp-dot.filled {
+  background: var(--blue);
+  border-color: #0d90df;
+  transform: scale(1.25);
+  box-shadow: 0 0 10px rgba(53,169,255,0.45);
+}
+
+.bottom-deck {
+  grid-row: 3;
+  position: relative;
+  z-index: 5;
+  display: block;
+  width: 100%;
+  align-self: center;
+  margin: 0 auto;
+}
+
+@media (max-width: 860px) {
+  body {
+    padding: 0;
+    overflow: auto;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+  .web-page {
+    --page-margin: 18px;
+    width: 100%;
+    min-height: 100vh;
+    height: auto;
+    border-radius: 0;
+    grid-template-rows: 84px 480px auto;
+    padding: 0 18px 22px;
+  }
+  .side-nav { display: none; }
+  .top-brand { top: 24px; }
+  .top-icons {
+    top: 20px;
+    right: 18px;
+    flex-direction: row;
+  }
+  .hero-word {
+    top: 164px;
+    left: var(--page-margin);
+    right: var(--page-margin);
+    font-size: 4.3rem;
+  }
+  .hero-word.is-message {
+    top: 132px;
+    left: var(--page-margin);
+    right: var(--page-margin);
+    max-width: calc(100% - var(--page-margin) * 2);
+    text-align: left;
+    font-size: clamp(2.6rem, 12vw, 4.1rem);
+    line-height: 0.94;
+  }
+  header {
+    left: 18px;
+    bottom: auto;
+    top: 84px;
+  }
+  .stage {
+    transform: translateY(22px);
+  }
+  .monitor.visible {
+    width: 130px;
+  }
+  .m-body {
+    width: 130px;
+    border-radius: 24px;
+  }
+  .m-screen {
+    width: 110px;
+    height: 100px;
+  }
+  .bottom-deck {
+    width: 100%;
+  }
+}
+
+/* ══════════════════════════════════════
+   BRUSH CURSOR
+══════════════════════════════════════ */
+.brush-el {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 58px;
+  /* Bottom of element (bristle tips) positioned at cursor via JS */
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.22));
+  transition: transform 0.08s ease;
+}
+.brush-el.show { display: flex; }
+
+.b-handle {
+  width: 11px; height: 50px;
+  background: linear-gradient(to right, #7a5530 15%, #d4a86a 45%, #d4a86a 55%, #7a5530 85%);
+  border-radius: 5px 5px 2px 2px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+}
+.b-ferrule {
+  width: 20px; height: 8px;
+  background: linear-gradient(to bottom, #d0d0d0, #909090);
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+.b-head {
+  width: 58px; height: 22px;
+  background: linear-gradient(to bottom, #f5e8a0, #c8a040);
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+}
+/* Highlight */
+.b-head::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 7px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.38), transparent);
+  border-radius: 5px 5px 0 0;
+}
+/* Bristle lines */
+.b-head::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 9px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(80,50,10,0.6) 0px, rgba(80,50,10,0.6) 2px,
+    rgba(200,160,60,0.2) 2px, rgba(200,160,60,0.2) 5px
+  );
+}
+
+/* ── Foam particles ── */
+.foam-dot {
+  position: fixed;
+  border-radius: 50%;
+  background: white;
+  pointer-events: none;
+  z-index: 9990;
+  box-shadow: 0 0 5px rgba(100,210,240,0.6);
+  animation: foam-rise ease-out forwards;
+}
+@keyframes foam-rise {
+  0%  { transform: translateY(0) scale(1);    opacity: 0.9; }
+  100%{ transform: translateY(-24px) scale(0.15); opacity: 0; }
+}
+
+/* ══════════════════════════════════════
+   BRAIN ANIMATIONS
+══════════════════════════════════════ */
+@keyframes idle-normal { 0%,100%{transform:scale(1)} 50%{transform:scale(1.018)} }
+@keyframes idle-over   { 0%,100%{transform:scale(1)} 50%{transform:scale(1.032)} }
+@keyframes idle-rotten {
+  0%,100%{transform:rotate(0deg)}
+  30%    {transform:rotate(1.8deg) scale(0.987)}
+  70%    {transform:rotate(-1.8deg) scale(0.993)}
+}
+@keyframes do-bounce {
+  0%  {transform:translateY(0) scale(1)}
+  25% {transform:translateY(4px) scale(0.94,1.06)}
+  55% {transform:translateY(-24px) scale(1.06,0.94)}
+  75% {transform:translateY(-8px)}
+  90% {transform:translateY(-2px)}
+  100%{transform:translateY(0) scale(1)}
+}
+@keyframes do-shake {
+  0%,100%{transform:rotate(0)}
+  12%{transform:rotate(-5deg) translateX(-5px)}
+  28%{transform:rotate(5deg)  translateX(6px)}
+  44%{transform:rotate(-4deg) translateX(-4px)}
+  60%{transform:rotate(4deg)  translateX(4px)}
+  76%{transform:rotate(-2deg) translateX(-2px)}
+  90%{transform:rotate(2deg)  translateX(2px)}
+}
+@keyframes do-twitch {
+  0%,100%{transform:rotate(0) scale(1)}
+  15%{transform:rotate(6deg)  scale(1.05)}
+  30%{transform:rotate(-6deg) scale(1.07)}
+  48%{transform:rotate(5deg)  scale(1.04)}
+  65%{transform:rotate(-3deg) scale(1.05)}
+  80%{transform:rotate(2deg)  scale(1.02)}
+}
+@keyframes do-droop {
+  0%  {transform:scale(1)}
+  30% {transform:scaleY(0.87) scaleX(1.07) translateY(7px)}
+  60% {transform:scaleY(0.94) scaleX(1.03) translateY(3px)}
+  80% {transform:scaleY(0.98) translateY(1px)}
+  100%{transform:scale(1)}
+}
+@keyframes do-jolt {
+  0%,100%{transform:scale(1) rotate(0)}
+  15%{transform:scale(1.19) rotate(-5deg)}
+  32%{transform:scale(0.88) rotate(5deg)}
+  52%{transform:scale(1.11) rotate(-3deg)}
+  72%{transform:scale(0.96) rotate(2deg)}
+  88%{transform:scale(1.04) rotate(-1deg)}
+}
+@keyframes do-shower {
+  0%,100%{transform:scale(1)}
+  30%{transform:scale(1.07)}
+  60%{transform:scale(0.96)}
+  80%{transform:scale(1.04)}
+}
+
+.brain-container.state-normal         { animation: idle-normal 3s   ease-in-out infinite; }
+.brain-container.state-overstimulated { animation: idle-over   1.1s ease-in-out infinite; }
+.brain-container.state-rotten         { animation: idle-rotten 2.6s ease-in-out infinite; }
+
+.brain-container.do-bounce { animation: do-bounce 0.65s cubic-bezier(0.34,1.56,0.64,1) forwards !important; }
+.brain-container.do-shake  { animation: do-shake  0.7s  ease forwards !important; }
+.brain-container.do-twitch { animation: do-twitch 0.75s ease forwards !important; }
+.brain-container.do-droop  { animation: do-droop  0.72s ease forwards !important; }
+.brain-container.do-jolt   { animation: do-jolt   0.65s ease forwards !important; }
+.brain-container.do-shower { animation: do-shower 1.0s  ease forwards !important; }
+
+/* Drag ghost */
+.drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 2rem;
+  transform: scale(1.3) rotate(-8deg);
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.18));
+}
+
+/* ══════════════════════════════════════
+   MONITOR SCENES
+══════════════════════════════════════ */
+.sc {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sc-emoji { position: relative; z-index: 2; font-size: 2.3rem; line-height: 1; }
+.sc-tag {
+  position: absolute;
+  top: 26px; left: 9px;
+  font-size: 0.44rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 999px;
+  z-index: 10;
+  background: rgba(255,255,255,0.72);
+  color: rgba(40,70,45,0.78);
+}
+
+.sc-idle {
+  background:
+    linear-gradient(180deg, #35a9ff 0%, #a7dcff 48%, #88be6e 49%, #4e8544 100%);
+}
+.idle-cursor {
+  width: 54px; height: 54px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.6);
+  color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 10px 20px rgba(35,75,44,0.18);
+  animation: blink 1.4s steps(1) infinite;
+}
+@keyframes blink { 50%{ opacity: 0; } }
+
+/* Salty */
+.sc-salty { background: linear-gradient(180deg, #6fc5ff 0%, #d9f3ff 50%, #6f9d55 51%, #436f38 100%); }
+.sc-salty .sc-tag { background: rgba(255,255,255,0.72); color: #236692; }
+.drop {
+  position: absolute;
+  top: -14px;
+  width: 1.5px; height: 13px;
+  background: rgba(110,170,255,0.5);
+  border-radius: 1px;
+  animation: rain-fall linear infinite;
+}
+@keyframes rain-fall { to { transform: translateY(125px); } }
+.sc-salty .sc-emoji { animation: sad-bob 2.5s ease-in-out infinite; }
+@keyframes sad-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
+
+/* Sweet */
+.sc-sweet { background: linear-gradient(180deg, #44afff 0%, #b8e6ff 48%, #9ccb76 49%, #5e934a 100%); }
+.sc-sweet .sc-tag { background: rgba(255,255,255,0.72); color: #7a6a00; }
+.firework {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: fw-burst ease-out infinite;
+}
+@keyframes fw-burst {
+  0%  { transform: scale(0);   opacity: 0.9; }
+  100%{ transform: scale(3.5); opacity: 0;   }
+}
+.sc-sweet .sc-emoji { animation: joy-bounce 0.55s cubic-bezier(0.34,1.56,0.64,1) infinite alternate; }
+@keyframes joy-bounce { from{transform:translateY(0) scale(1)} to{transform:translateY(-9px) scale(1.1)} }
+
+/* Spicy */
+.sc-spicy { background: linear-gradient(180deg, #39aaff 0%, #e8f7ff 47%, #90bf6d 48%, #547f42 100%); }
+.sc-spicy .sc-tag { background: rgba(255,255,255,0.72); color: #b24b12; }
+.glow-center {
+  position: absolute;
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,110,0,0.55) 0%, transparent 70%);
+  animation: glow-pulse 0.7s ease-in-out infinite alternate;
+}
+@keyframes glow-pulse {
+  from{transform:scale(0.8); opacity:0.4}
+  to  {transform:scale(1.5); opacity:1  }
+}
+.pulse-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(255,80,0,0.45);
+  animation: spicy-ring 1.1s ease-out infinite;
+  opacity: 0;
+}
+@keyframes spicy-ring {
+  0%  { transform: scale(0); opacity: 0.7; }
+  100%{ transform: scale(4); opacity: 0;   }
+}
+.sc-spicy .sc-emoji { animation: spicy-twitch 0.28s ease-in-out infinite alternate; filter: drop-shadow(0 0 8px rgba(255,100,0,0.7)); }
+@keyframes spicy-twitch {
+  from{transform:rotate(-4deg) scale(1)  }
+  to  {transform:rotate(4deg)  scale(1.1)}
+}
+
+/* Bitter */
+.sc-bitter { background: linear-gradient(180deg, #e7e2d8 0%, #f8f4eb 52%, #8d8777 53%, #555044 100%); }
+.sc-bitter .sc-tag { background: rgba(255,255,255,0.72); color: #4a4a4a; animation: tag-flicker 5s ease infinite; }
+@keyframes tag-flicker { 0%,87%,100%{opacity:1} 90%,96%{opacity:0} 93%{opacity:1} }
+.blood-flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(130,0,0,0);
+  animation: blood-flicker 5s ease infinite;
+}
+@keyframes blood-flicker {
+  0%,85%,100%{background:rgba(130,0,0,0)   }
+  88%,94%    {background:rgba(130,0,0,0.28)}
+  91%        {background:rgba(130,0,0,0.06)}
+}
+.sc-bitter .sc-emoji { animation: horror-appear 5s ease infinite; }
+.sc-bitter .scene-object { filter: drop-shadow(0 18px 28px rgba(0,0,0,0.32)); }
+@keyframes horror-appear {
+  0%,15%  {opacity:0; transform:scale(0.5) rotate(-5deg)}
+  25%,65% {opacity:1; transform:scale(1) rotate(0)       }
+  80%,100%{opacity:0; transform:scale(0.6) rotate(8deg)  }
+}
+
+/* Sour */
+.sc-sour { background: linear-gradient(180deg, #ffe95d 0%, #fff6ba 50%, #93bf65 51%, #5b853d 100%); animation: news-strobe 0.18s steps(1) 4; }
+@keyframes news-strobe { 50%{ background: #ffee00; } }
+.sc-sour .sc-emoji { animation: shock-pop 0.45s cubic-bezier(0.34,1.56,0.64,1) 3 forwards; }
+@keyframes shock-pop {
+  0%  { transform: scale(0.4) rotate(-15deg); }
+  55% { transform: scale(1.35) rotate(5deg);  }
+  100%{ transform: scale(1) rotate(0);        }
+}
+.news-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: #1d6ff2;
+  color: white;
+  font-size: 0.4rem;
+  font-weight: 900;
+  padding: 2px 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  z-index: 5;
+}
+.news-badge {
+  background: white;
+  color: #1d6ff2;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 0.4rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+.ticker-text { white-space: nowrap; animation: ticker 9s linear infinite; }
+@keyframes ticker {
+  from{ transform: translateX(100%);  }
+  to  { transform: translateX(-250%); }
+}
+
+/* Shower */
+.sc-shower { background: linear-gradient(180deg, #bdf1ff 0%, #f7fffa 52%, #a2cf83 53%, #6b9b52 100%); }
+.sc-shower .sc-tag { background: rgba(255,255,255,0.72); color: rgba(0,100,100,0.7); }
+.sc-clean { background: #ffffff; }
+.sc-clean .sc-tag { background: rgba(255,255,255,0.9); color: rgba(0,0,0,0.5); }
+.ripple-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,150,136,0.45);
+  animation: expand-ripple 2.4s ease-out infinite;
+  opacity: 0;
+}
+@keyframes expand-ripple {
+  0%  { transform: translate(-50%,-50%) scale(0.5); opacity: 0.75; }
+  100%{ transform: translate(-50%,-50%) scale(5);   opacity: 0;    }
+}
+.sc-shower .sc-emoji { animation: float-calm 3s ease-in-out infinite; }
+@keyframes float-calm {
+  0%,100%{transform:translateY(0)    scale(1)   }
+  50%    {transform:translateY(-6px) scale(1.05)}
+}
+.shower-label {
+  position: absolute;
+  bottom: 7px;
+  font-size: 0.4rem;
+  color: rgba(0,100,100,0.6);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  z-index: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="glow" id="glow"></div>
+
+<!-- Custom brush cursor (follows pointer, only in shower mode) -->
+<div class="brush-el" id="brushEl">
+  <div class="b-handle"></div>
+  <div class="b-ferrule"></div>
+  <div class="b-head"></div>
+</div>
+
+<main class="web-page">
+<div class="top-brand">Brain Shower</div>
+<div class="top-icons" aria-hidden="true">
+  <span>⌕</span>
+  <span>◌</span>
+  <span>♙</span>
+</div>
+<div class="scene-backdrop" id="mScreen" aria-hidden="true">
+  <div class="sc sc-idle"><span class="idle-cursor">_</span></div>
+</div>
+<div class="scrub-flash" id="scrubFlash" aria-hidden="true"></div>
+<div class="hero-word" id="heroWord"><div class="hw-line"><span>Every</span><span>scroll</span></div><div class="hw-line"><span>is</span><span>a meal.</span></div></div>
+
+<header>
+  <h1 id="stateTitle">정상</h1>
+  <p id="stateDesc">뇌가 건강하게 균형을 유지하고 있어요.</p>
+</header>
+
+<div class="arena">
+  <div class="stage">
+
+    <!-- Monitor -->
+    <div class="monitor" id="monitor">
+      <div class="m-body">
+        <div class="m-screen">
+          <div class="sc sc-idle"><span class="idle-cursor">_</span></div>
+        </div>
+        <div class="m-footer"><div class="m-cam"></div></div>
+      </div>
+      <div class="m-neck"></div>
+      <div class="m-base"></div>
+    </div>
+
+    <!-- Brain -->
+    <div class="brain-area">
+      <div class="brain-container state-normal" id="brainEl">
+
+        <img class="brain-character-img" id="brainImg" data-src="brain-character-normal.png" alt="통 속의 뇌 캐릭터" draggable="false">
+
+        <svg class="brain-svg fallback-visible" id="brainSvg" viewBox="0 0 200 195"
+             xmlns="http://www.w3.org/2000/svg" overflow="visible">
+          <defs>
+            <radialGradient id="bg" cx="38%" cy="30%" r="65%">
+              <stop offset="0%"   stop-color="#ffdfe8" id="gs1"/>
+              <stop offset="58%"  stop-color="#f3a0af"/>
+              <stop offset="100%" stop-color="#d95f72" id="gs2"/>
+            </radialGradient>
+            <radialGradient id="rim" cx="50%" cy="50%" r="50%">
+              <stop offset="58%" stop-color="transparent"/>
+              <stop offset="100%" stop-color="rgba(102,20,32,0.18)"/>
+            </radialGradient>
+            <linearGradient id="limb" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f0a4ac"/>
+              <stop offset="100%" stop-color="#bd5360"/>
+            </linearGradient>
+            <linearGradient id="shoe" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="100%" stop-color="#d6d6d6"/>
+            </linearGradient>
+            <radialGradient id="eyeGlass" cx="35%" cy="28%" r="70%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="68%" stop-color="#f7f7f7"/>
+              <stop offset="100%" stop-color="#d8d8d8"/>
+            </radialGradient>
+            <filter id="soft3d" x="-40%" y="-40%" width="180%" height="180%">
+              <feDropShadow dx="0" dy="7" stdDeviation="6" flood-color="#7a2937" flood-opacity="0.22"/>
+            </filter>
+          </defs>
+          <ellipse cx="100" cy="188" rx="54" ry="8" fill="rgba(0,0,0,0.13)"/>
+          <path d="M52,105 C29,113 30,143 42,151" stroke="url(#limb)" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M148,105 C171,113 170,143 158,151" stroke="url(#limb)" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M42,151 C36,156 34,164 41,166 C49,168 55,161 52,154" fill="url(#limb)"/>
+          <path d="M158,151 C164,156 166,164 159,166 C151,168 145,161 148,154" fill="url(#limb)"/>
+          <path d="M82,157 C80,169 80,178 77,184" stroke="url(#limb)" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M118,157 C120,169 120,178 123,184" stroke="url(#limb)" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <ellipse cx="73" cy="187" rx="13" ry="8" fill="url(#shoe)"/>
+          <ellipse cx="127" cy="187" rx="13" ry="8" fill="url(#shoe)"/>
+          <path d="M100,44 C88,36 66,35 48,50 C30,65 20,88 24,114 C28,140 44,160 66,168 C80,173 92,165 98,157 C99,153 100,148 100,148" fill="url(#bg)" filter="url(#soft3d)"/>
+          <path d="M100,44 C112,36 134,35 152,50 C170,65 180,88 176,114 C172,140 156,160 134,168 C120,173 108,165 102,157 C101,153 100,148 100,148" fill="url(#bg)" filter="url(#soft3d)"/>
+          <ellipse cx="100" cy="150" rx="11" ry="9" fill="url(#bg)"/>
+          <path d="M100,44 C88,36 66,35 48,50 C30,65 20,88 24,114 C28,140 44,160 66,168 C80,173 92,165 98,157 C99,153 100,148 C101,153 102,157 C108,165 120,173 134,168 C156,160 172,140 176,114 C180,88 170,65 152,50 C134,35 112,36 100,44 Z" fill="url(#rim)"/>
+          <path d="M100,46 C97,78 103,108 100,132 C98,143 100,148 100,148" stroke="#e0849a" stroke-width="1.8" fill="none" opacity="0.35" id="mid"/>
+          <path d="M 47,58  Q 58,50  68,59"  stroke="#e0849a" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.5"  id="lf1"/>
+          <path d="M 34,82  Q 48,73  59,82"  stroke="#e0849a" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.5"  id="lf2"/>
+          <path d="M 28,108 Q 43,99  54,108" stroke="#e0849a" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.5"  id="lf3"/>
+          <path d="M 32,133 Q 46,124 57,133" stroke="#e0849a" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.45" id="lf4"/>
+          <path d="M 46,153 Q 57,146 66,153" stroke="#e0849a" stroke-width="2"   fill="none" stroke-linecap="round" opacity="0.38" id="lf5"/>
+          <path d="M 70,58  Q 78,52  85,59"  stroke="#e0849a" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.35" id="lf6"/>
+          <path d="M 66,104 Q 75,96  82,104" stroke="#e0849a" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.35" id="lf7"/>
+          <path d="M 153,58  Q 142,50  132,59" stroke="#e0849a" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.5"  id="rf1"/>
+          <path d="M 166,82  Q 152,73  141,82" stroke="#e0849a" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.5"  id="rf2"/>
+          <path d="M 172,108 Q 157,99  146,108"stroke="#e0849a" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.5"  id="rf3"/>
+          <path d="M 168,133 Q 154,124 143,133"stroke="#e0849a" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.45" id="rf4"/>
+          <path d="M 154,153 Q 143,146 134,153"stroke="#e0849a" stroke-width="2"   fill="none" stroke-linecap="round" opacity="0.38" id="rf5"/>
+          <path d="M 130,58  Q 122,52  115,59" stroke="#e0849a" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.35" id="rf6"/>
+          <path d="M 134,104 Q 125,96  118,104"stroke="#e0849a" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.35" id="rf7"/>
+          <ellipse cx="75" cy="62" rx="23" ry="12" fill="white" opacity="0.24"/>
+          <ellipse cx="123" cy="72" rx="18" ry="9" fill="white" opacity="0.12"/>
+          <ellipse id="eyeL" cx="80"  cy="109" rx="15" ry="16" fill="url(#eyeGlass)"/>
+          <circle  id="pupL" cx="83"  cy="111" r="5.5"  fill="#171717"/>
+          <circle  cx="78"  cy="104" r="2.3" fill="white"/>
+          <ellipse id="eyeR" cx="120" cy="109" rx="15" ry="16" fill="url(#eyeGlass)"/>
+          <circle  id="pupR" cx="123" cy="111" r="5.5"  fill="#171717"/>
+          <circle  cx="118" cy="104" r="2.3" fill="white"/>
+          <path id="mouth" d="M 88,128 Q 100,136 112,128" stroke="#c27080" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+          <ellipse id="blL" cx="68"  cy="120" rx="10" ry="6" fill="#ffb3c6" opacity="0.4"/>
+          <ellipse id="blR" cx="132" cy="120" rx="10" ry="6" fill="#ffb3c6" opacity="0.4"/>
+        </svg>
+
+        <div class="reaction-msg" id="msgEl"></div>
+        <div class="dots" id="dotsEl"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<section class="bottom-deck" aria-label="brain controls and state cards">
+
+<!-- Tray with tabs -->
+<div class="tray">
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="food">🍽 음식</button>
+    <button class="tab-btn"        data-tab="shower">🧹 샤워</button>
+  </div>
+
+  <!-- Food panel -->
+  <div class="tab-panel" id="panel-food">
+    <div class="items-row">
+      <div class="food-item item-salty"  draggable="true" data-type="salty">
+        <div class="food-icon">🧂</div>
+        <span class="food-label">슬픔</span>
+      </div>
+      <div class="food-item item-sweet"  draggable="true" data-type="sweet">
+        <div class="food-icon">🍬</div>
+        <span class="food-label">행복</span>
+      </div>
+      <div class="food-item item-spicy"  draggable="true" data-type="spicy">
+        <div class="food-icon">🌶️</div>
+        <span class="food-label">도파민</span>
+      </div>
+      <div class="food-item item-bitter" draggable="true" data-type="bitter">
+        <div class="food-icon">🖤</div>
+        <span class="food-label">공포</span>
+      </div>
+      <div class="food-item item-sour"   draggable="true" data-type="sour">
+        <div class="food-icon">🍋</div>
+        <span class="food-label">충격</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shower panel -->
+  <div class="tab-panel hidden" id="panel-shower">
+    <div class="shower-panel">
+      <p class="shower-hint">뇌 위에서 솔로 문질러 닦으세요</p>
+      <div class="sp-dots" id="spDots">
+        <div class="sp-dot"></div>
+        <div class="sp-dot"></div>
+        <div class="sp-dot"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</section>
+</main>
+
+<script>
+// ─── Config ───────────────────────────────────────────
+const STIM_AT   = 3;
+const ROTTEN_AT = 7;
+const STROKES_NEEDED  = 3;    // swipes to clean
+const MIN_SWIPE_PX    = 55;   // min px of movement to count as 1 stroke
+
+const FOOD = {
+  salty:  { anim:'droop',  msg:'😶 슬픔이 스며들어...',      glow:'rgba(168,196,224,0.3)'  },
+  sweet:  { anim:'bounce', msg:'🎉 기쁨 과부하!',            glow:'rgba(255,180,210,0.35)' },
+  spicy:  { anim:'twitch', msg:'🔥 자극 급등!',              glow:'rgba(255,120,50,0.35)'  },
+  bitter: { anim:'shake',  msg:'😱 공포가 흐르고 있어...',    glow:'rgba(149,117,205,0.3)'  },
+  sour:   { anim:'jolt',   msg:'⚡ 충격!',                   glow:'rgba(255,214,0,0.3)'    },
+};
+
+const FOOD_TITLES = {
+  salty:  'Ugh... I miss it.',
+  sweet:  'More!! I feel so good!',
+  spicy:  'Too fast!! Brain on fire!',
+  bitter: 'Oooooooooh!! Scared to death!',
+  sour:   'Whoa!! That hit hard!',
+};
+
+const STATES = {
+  normal: {
+    gs1:'#ffdfe8', gs2:'#d95f72', fold:'#b94e62',
+    shadow:'rgba(133,45,61,0.28)',
+    blush:'#ffb3c6', blushOp:'0.4',
+    mouth:'M 88,128 Q 100,136 112,128', mouthStroke:'#c27080',
+    pupCy:'111', pupR:'5.5', eyeRx:'15', eyeRy:'16',
+    badge:'정상', badgeColor:'#8b918c',
+    glowBg:'rgba(0,0,0,0.09)', dotClass:'fed',
+    title:'정상', desc:'뇌가 건강하게 균형을 유지하고 있어요.',
+  },
+  overstimulated: {
+    gs1:'#ffe0a8', gs2:'#e47d31', fold:'#b85f22',
+    shadow:'rgba(201,87,24,0.34)',
+    blush:'#ff9060', blushOp:'0.4',
+    mouth:'M 87,129 Q 100,138 113,129', mouthStroke:'#b06020',
+    pupCy:'110', pupR:'6.2', eyeRx:'16', eyeRy:'17',
+    badge:'과자극', badgeColor:'#c26b1d',
+    glowBg:'rgba(201,87,24,0.13)', dotClass:'fed hot',
+    title:'과부하', desc:'너무 많은 자극이 쌓이고 있어요. 슬슬 위험해요.',
+  },
+  rotten: {
+    gs1:'#dff0a4', gs2:'#82ad4b', fold:'#5d7f33',
+    shadow:'rgba(72,104,28,0.36)',
+    blush:'#c0dd60', blushOp:'0.38',
+    mouth:'M 88,133 Q 94,128 100,133 Q 106,138 112,133', mouthStroke:'#7aaa28',
+    pupCy:'113', pupR:'5', eyeRx:'14', eyeRy:'13',
+    badge:'썩음 🤢', badgeColor:'#6f8a38',
+    glowBg:'rgba(72,104,28,0.12)', dotClass:'fed rotten',
+    title:'썩음', desc:'과도한 콘텐츠로 뇌가 완전히 지쳐버렸어요.',
+  },
+};
+
+const CHARACTER_IMAGES = {
+  normal: 'brain-character-normal.png',
+  overstimulated: 'brain-character-overstimulated.png',
+  rotten: 'brain-character-rotten.png',
+  shower: 'brain-character-shower.png',
+};
+
+// ─── App state ────────────────────────────────────────
+let feeds        = 0;
+let phase        = 'normal';
+let showerMode   = false;   // true when shower tab is active
+let showerStarted = false;  // true after first successful scrub stroke
+
+// Scrub state
+let isScrubbing  = false;
+let scrubStartX  = 0;
+let scrubStartY  = 0;
+let scrubMoved   = 0;    // accumulated distance in current stroke
+let strokeCount  = 0;    // strokes so far this session
+let brushAngle   = 15;   // current brush tilt (deg)
+let lastPtrX     = 0;
+let foamThrottle = 0;
+
+// ─── DOM ──────────────────────────────────────────────
+const brainEl    = document.getElementById('brainEl');
+const brainSvg   = document.getElementById('brainSvg');
+const brainImg   = document.getElementById('brainImg');
+const stateBadge  = document.getElementById('stateBadge');
+const stateTitle  = document.getElementById('stateTitle');
+const stateDesc   = document.getElementById('stateDesc');
+const msgEl      = document.getElementById('msgEl');
+const heroWord   = document.getElementById('heroWord');
+const dotsEl     = document.getElementById('dotsEl');
+const glowEl     = document.getElementById('glow');
+const gs1        = document.getElementById('gs1');
+const gs2        = document.getElementById('gs2');
+const mScreen    = document.getElementById('mScreen');
+const monitorEl  = document.getElementById('monitor');
+const brushEl    = document.getElementById('brushEl');
+const scrubFlashEl = document.getElementById('scrubFlash');
+const spDots     = document.getElementById('spDots').querySelectorAll('.sp-dot');
+const foldIds    = ['mid','lf1','lf2','lf3','lf4','lf5','lf6','lf7',
+                    'rf1','rf2','rf3','rf4','rf5','rf6','rf7'];
+
+brainImg.addEventListener('load', () => {
+  brainImg.classList.add('is-loaded');
+  brainSvg.classList.remove('fallback-visible');
+});
+brainImg.addEventListener('error', () => {
+  brainImg.hidden = true;
+  brainSvg.classList.add('fallback-visible');
+});
+
+function setCharacterImage(nextPhase) {
+  const src = CHARACTER_IMAGES[nextPhase] || CHARACTER_IMAGES.normal;
+  if (brainImg.dataset.src === src && brainImg.src) return;
+  brainImg.dataset.src = src;
+  brainImg.hidden = false;
+  brainImg.classList.remove('is-loaded');
+  brainImg.src = src;
+}
+
+setCharacterImage(phase);
+
+brainEl.addEventListener('dragstart', e => {
+  e.preventDefault();
+});
+
+// ─── Tabs ─────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+
+    // Update buttons
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Update panels
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+    document.getElementById(`panel-${tab}`).classList.remove('hidden');
+
+    showerMode = (tab === 'shower');
+
+    if (showerMode) {
+      brainEl.classList.add('scrub-mode');
+      showerStarted = false; // reset — brain/text only change after first stroke
+    } else {
+      brainEl.classList.remove('scrub-mode');
+      hideBrush();
+      showerStarted = false;
+      // Restore state-based brain image
+      setCharacterImage(phase);
+      strokeCount = 0;
+      updateStrokeDots();
+      // Restore initial hero text layout
+      heroWord.innerHTML = '<div class="hw-line"><span>Every</span><span>scroll</span></div><div class="hw-line"><span>is</span><span>a meal.</span></div>';
+      heroWord.classList.remove('is-message', 'is-typing', ...HERO_MSG_CLASSES);
+      // Hide scrub flash
+      scrubFlashEl.classList.remove('active', 'fading');
+    }
+  });
+});
+
+// ─── Build feed dots ──────────────────────────────────
+function buildDots() {
+  dotsEl.innerHTML = '';
+  for (let i = 0; i < ROTTEN_AT; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i < feeds ? ' ' + STATES[phase].dotClass : '');
+    dotsEl.appendChild(d);
+  }
+}
+
+// ─── Apply brain visual state ──────────────────────────
+function applyState() {
+  phase = feeds >= ROTTEN_AT ? 'rotten' : feeds >= STIM_AT ? 'overstimulated' : 'normal';
+  const s = STATES[phase];
+
+  gs1.setAttribute('stop-color', s.gs1);
+  gs2.setAttribute('stop-color', s.gs2);
+  foldIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute('stroke', s.fold);
+  });
+  brainSvg.style.filter = `drop-shadow(0 10px 28px ${s.shadow})`;
+  document.getElementById('mouth').setAttribute('d', s.mouth);
+  document.getElementById('mouth').setAttribute('stroke', s.mouthStroke);
+  document.getElementById('blL').setAttribute('fill', s.blush);
+  document.getElementById('blL').setAttribute('opacity', s.blushOp);
+  document.getElementById('blR').setAttribute('fill', s.blush);
+  document.getElementById('blR').setAttribute('opacity', s.blushOp);
+  ['eyeL','eyeR'].forEach(id => {
+    const el = document.getElementById(id);
+    el.setAttribute('rx', s.eyeRx); el.setAttribute('ry', s.eyeRy);
+  });
+  ['pupL','pupR'].forEach(id => {
+    const el = document.getElementById(id);
+    el.setAttribute('r', s.pupR); el.setAttribute('cy', s.pupCy);
+  });
+  if (stateBadge) { stateBadge.textContent = s.badge; stateBadge.style.color = s.badgeColor; }
+  stateTitle.textContent = s.title;
+  stateDesc.textContent  = s.desc;
+  setCharacterImage(phase);
+  glowEl.style.background = `radial-gradient(ellipse, ${s.glowBg} 0%, rgba(0,0,0,0.035) 48%, transparent 72%)`;
+  brainEl.className = brainEl.className.replace(/state-\S+/g, '').trim();
+  brainEl.classList.add(`state-${phase}`);
+  if (showerMode) brainEl.classList.add('scrub-mode');
+  buildDots();
+}
+
+// ─── Stroke progress dots ─────────────────────────────
+function updateStrokeDots() {
+  spDots.forEach((dot, i) => {
+    dot.classList.toggle('filled', i < strokeCount);
+  });
+}
+
+// ─── Scene icon physics ───────────────────────────────
+const scenePhysics = {
+  raf: 0,
+  type: 'idle',
+  bodies: [],
+  startedAt: 0,
+  pointer: { x: -9999, y: -9999, active: false, down: false },
+  stop() {
+    cancelAnimationFrame(this.raf);
+    this.raf = 0;
+    this.bodies = [];
+  },
+  start(type) {
+    this.stop();
+    this.type = type;
+    this.startedAt = performance.now();
+    const rect = mScreen.getBoundingClientRect();
+    this.bodies = [...mScreen.querySelectorAll('[data-scene-icon]')].map((el, i) => {
+      const size = Number(el.dataset.size || 1);
+      let homeX = rect.width * Number(el.dataset.x) / 100;
+      let homeY = rect.height * Number(el.dataset.y) / 100;
+      if (type === 'salty') {
+        homeY = rect.height - 46 - (i % 3) * 36;
+      }
+      const intro = this.makeIntro(type, homeX, homeY, rect, i);
+      el.style.opacity = '0';
+      return {
+        el,
+        homeX,
+        homeY,
+        x: intro.x,
+        y: intro.y,
+        vx: intro.vx,
+        vy: intro.vy,
+        r: 34 * size,
+        size,
+        seed: i * 0.73,
+        delay: intro.delay,
+        intro: 0,
+      };
+    });
+    if (!this.bodies.length) return;
+    this.tick(performance.now());
+  },
+  makeIntro(type, homeX, homeY, rect, i) {
+    const stagger = i * 90;
+    if (type === 'salty') {
+      return { x: homeX, y: -80 - i * 42, vx: 0, vy: 1.6 + i * 0.08, delay: stagger };
+    }
+    if (type === 'sweet') {
+      return { x: homeX + Math.sin(i) * 24, y: homeY + 80, vx: Math.sin(i * 1.7) * 0.2, vy: -0.85, delay: stagger };
+    }
+    if (type === 'spicy') {
+      return { x: homeX, y: homeY, vx: 0, vy: 0, delay: i * 55 };
+    }
+    if (type === 'bitter') {
+      const edge = i % 4;
+      const x = edge === 0 ? -70 : edge === 1 ? rect.width + 70 : homeX;
+      const y = edge === 2 ? -70 : edge === 3 ? rect.height + 70 : homeY;
+      return { x, y, vx: 0, vy: 0, delay: stagger };
+    }
+    if (type === 'sour') {
+      return {
+        x: rect.width * 0.5 + (Math.random() - 0.5) * 60,
+        y: rect.height * 0.43 + (Math.random() - 0.5) * 60,
+        vx: (homeX - rect.width * 0.5) * 0.035,
+        vy: (homeY - rect.height * 0.43) * 0.035,
+        delay: i * 36,
+      };
+    }
+    return { x: homeX, y: homeY, vx: Math.sin(i * 2.1) * 0.45, vy: Math.cos(i * 1.7) * 0.45, delay: stagger };
+  },
+  tick(now) {
+    const rect = mScreen.getBoundingClientRect();
+    const t = now / 1000;
+    const elapsed = now - this.startedAt;
+
+    for (const b of this.bodies) {
+      const intro = Math.max(0, Math.min(1, (elapsed - b.delay) / 760));
+      const easeIntro = 1 - Math.pow(1 - intro, 3);
+      let ax = (b.homeX - b.x) * 0.003;
+      let ay = (b.homeY - b.y) * 0.003;
+
+      if (this.type === 'salty') {
+        ax += Math.sin(t * 0.9 + b.seed) * 0.012;
+        if (intro < 1) {
+          ay += 0.13;
+          if (b.y > rect.height - b.r * 1.1) {
+            b.y = rect.height - b.r * 1.1;
+            b.vy *= -0.18;
+            b.vx *= 0.72;
+          }
+        } else {
+          ay += 0.022;
+        }
+      } else if (this.type === 'sweet') {
+        ax += Math.sin(t * 2.2 + b.seed) * 0.05;
+        ay += Math.cos(t * 3.3 + b.seed) * 0.08 - (intro < 1 ? 0.06 : 0);
+      } else if (this.type === 'spicy') {
+        const flash = intro < 1 && Math.sin((elapsed - b.delay) * 0.045) > 0 ? 0.9 : 1;
+        ax += (Math.random() - 0.5) * 0.32 * flash;
+        ay += (Math.random() - 0.5) * 0.32 * flash;
+      } else if (this.type === 'bitter') {
+        ax += Math.sin(t * 22 + b.seed) * (intro < 1 ? 0.18 : 0.05);
+        ay += Math.cos(t * 20 + b.seed) * (intro < 1 ? 0.18 : 0.05);
+      } else if (this.type === 'sour') {
+        const kick = Math.sin(t * 8 + b.seed);
+        ax += Math.sign(kick) * (intro < 1 ? 0.12 : 0.055);
+        ay += Math.cos(t * 7 + b.seed) * (intro < 1 ? 0.12 : 0.055);
+      } else if (this.type === 'shower') {
+        ax += Math.sin(t * 0.8 + b.seed) * 0.018;
+        ay += Math.cos(t * 0.9 + b.seed) * 0.018;
+      }
+
+      if (this.pointer.down && this.pointer.active) {
+        const px = this.pointer.x - rect.left;
+        const py = this.pointer.y - rect.top;
+        const dx = b.x - px;
+        const dy = b.y - py;
+        const d2 = dx * dx + dy * dy;
+        const range = this.type === 'spicy' || this.type === 'sour' ? 190 : 150;
+        if (d2 < range * range) {
+          const d = Math.sqrt(d2) || 1;
+          const push = (1 - d / range) * (this.type === 'spicy' ? 2.8 : this.type === 'sour' ? 2.2 : 1.6);
+          b.vx += (dx / d) * push;
+          b.vy += (dy / d) * push;
+        }
+      }
+
+      b.vx = (b.vx + ax) * 0.93;
+      b.vy = (b.vy + ay) * 0.93;
+      b.x += b.vx;
+      b.y += b.vy;
+
+      if (b.x < b.r) { b.x = b.r; b.vx = Math.abs(b.vx) * 0.72; }
+      if (b.x > rect.width - b.r) { b.x = rect.width - b.r; b.vx = -Math.abs(b.vx) * 0.72; }
+      if (!(this.type === 'salty' && intro < 1) && b.y < b.r) { b.y = b.r; b.vy = Math.abs(b.vy) * 0.72; }
+      if (b.y > rect.height - b.r) { b.y = rect.height - b.r; b.vy = -Math.abs(b.vy) * 0.72; }
+
+      const rot = Math.max(-18, Math.min(18, b.vx * 3));
+      const scalePulse =
+        this.type === 'sweet' ? 1 + Math.sin(t * 4 + b.seed) * 0.08 :
+        this.type === 'spicy' ? 1 + Math.sin(t * 14 + b.seed) * 0.06 + (intro < 1 && Math.sin((elapsed - b.delay) * 0.045) > 0 ? 0.35 : 0) :
+        this.type === 'sour' ? 1 + Math.max(0, Math.sin(t * 8 + b.seed)) * 0.12 + (intro < 1 ? (1 - intro) * 0.55 : 0) :
+        1;
+      const opacity =
+        this.type === 'bitter' ? (0.22 + Math.max(0, Math.sin(t * 2.8 + b.seed)) * 0.62) * easeIntro :
+        this.type === 'spicy' && intro < 1 ? (Math.sin((elapsed - b.delay) * 0.045) > 0 ? 0.94 : 0.12) * easeIntro :
+        this.type === 'salty' ? 0.7 * easeIntro :
+        0.82 * easeIntro;
+      b.el.style.opacity = Math.max(0, Math.min(1, opacity)).toFixed(3);
+      b.el.style.transform = `translate3d(${b.x - b.homeX}px, ${b.y - b.homeY}px, 0) rotate(${rot}deg) scale(${(b.size * scalePulse).toFixed(3)})`;
+    }
+    this.raf = requestAnimationFrame(this.tick.bind(this));
+  },
+  nudge(clientX, clientY, strength = 7) {
+    const rect = mScreen.getBoundingClientRect();
+    const px = clientX - rect.left;
+    const py = clientY - rect.top;
+    for (const b of this.bodies) {
+      const dx = b.x - px;
+      const dy = b.y - py;
+      const d = Math.sqrt(dx * dx + dy * dy) || 1;
+      if (d < 170) {
+        const hit = (1 - d / 170) * strength;
+        b.vx += (dx / d) * hit;
+        b.vy += (dy / d) * hit;
+      }
+    }
+  },
+};
+
+document.addEventListener('pointermove', e => {
+  scenePhysics.pointer.x = e.clientX;
+  scenePhysics.pointer.y = e.clientY;
+  scenePhysics.pointer.active = scenePhysics.pointer.down;
+});
+document.addEventListener('pointerdown', e => {
+  scenePhysics.pointer.x = e.clientX;
+  scenePhysics.pointer.y = e.clientY;
+  scenePhysics.pointer.down = true;
+  scenePhysics.pointer.active = true;
+  scenePhysics.nudge(e.clientX, e.clientY, 9);
+});
+document.addEventListener('pointerup', () => {
+  scenePhysics.pointer.down = false;
+  scenePhysics.pointer.active = false;
+});
+document.addEventListener('pointercancel', () => {
+  scenePhysics.pointer.down = false;
+  scenePhysics.pointer.active = false;
+});
+document.addEventListener('pointerleave', () => {
+  scenePhysics.pointer.down = false;
+  scenePhysics.pointer.active = false;
+});
+
+// ─── Monitor scene renderer ───────────────────────────
+const DARK_SCENES = new Set(['salty', 'spicy', 'bitter', 'sour']);
+const webPage = document.querySelector('.web-page');
+
+function renderScene(type) {
+  monitorEl.classList.add('visible');
+  scenePhysics.stop();
+  webPage.dataset.theme = DARK_SCENES.has(type) ? 'dark' : 'light';
+
+  function rain(n) {
+    let h = '';
+    for (let i = 0; i < n; i++) {
+      const l = Math.random() * 94;
+      const t = Math.random() * 100;
+      const d = 0.45 + Math.random() * 0.7;
+      const dl = Math.random() * 1.8;
+      h += `<div class="drop" style="left:${l}%;top:${t}%;animation-duration:${d}s;animation-delay:-${dl}s"></div>`;
+    }
+    return h;
+  }
+
+  function fireworks(n) {
+    const cols = ['#ff6b9d','#ffd700','#7bed9f','#70a1ff','#ff4757','#eccc68','#ff9f43'];
+    let h = '';
+    for (let i = 0; i < n; i++) {
+      const l = 5 + Math.random() * 85, t = 5 + Math.random() * 80;
+      const sz = 18 + Math.random() * 22, d = 0.7 + Math.random() * 0.7, dl = Math.random() * 2.5;
+      h += `<div class="firework" style="left:${l}%;top:${t}%;width:${sz}px;height:${sz}px;background:radial-gradient(circle,${cols[i%cols.length]},transparent);animation-duration:${d}s;animation-delay:${dl}s"></div>`;
+    }
+    return h;
+  }
+
+  function objects(items) {
+    return items.map((it, i) => {
+      const cls = it.cls || 'scene-bubble';
+      const size = it.size || 1;
+      return `<div class="scene-object ${cls}" data-scene-icon data-x="${it.x}" data-y="${it.y}" data-size="${size}" data-seed="${i}" style="left:${it.x}%;top:${it.y}%">${it.text}</div>`;
+    }).join('');
+  }
+
+  function motionLines(n) {
+    let h = '';
+    for (let i = 0; i < n; i++) {
+      h += `<div class="scene-line" style="top:${16 + i * 13}%;--rot:${(i % 2 ? -4 : 4)}deg;animation-duration:${7 + i * 0.4}s;animation-delay:${-i * 1.1}s"></div>`;
+    }
+    return h;
+  }
+
+  const scenes = {
+    salty: `<div class="sc sc-salty"><img class="sc-bg" src="bg-salty.png" alt="">${rain(44)}${objects([
+      {text:'😢', x:9, y:20, size:1.2}, {text:'💧', x:19, y:62}, {text:'☔', x:30, y:32}, {text:'🌧️', x:43, y:72, size:1.15},
+      {text:'😞', x:55, y:22}, {text:'💦', x:68, y:56}, {text:'😭', x:81, y:28, size:1.25}, {text:'☁️', x:91, y:74},
+      {text:'💧', x:12, y:82}, {text:'😢', x:38, y:50}, {text:'🌧️', x:62, y:84}, {text:'☔', x:84, y:48}
+    ])}<div class="sc-emoji">😢</div></div>`,
+    sweet: `<div class="sc sc-sweet"><img class="sc-bg" src="bg-sweet.png" alt="">${fireworks(24)}${objects([
+      {text:'🍬', x:10, y:28}, {text:'🎉', x:22, y:66, size:1.18}, {text:'🍭', x:35, y:22}, {text:'✨', x:48, y:76},
+      {text:'😄', x:58, y:34, size:1.2}, {text:'💖', x:72, y:20}, {text:'🌈', x:84, y:66, size:1.1}, {text:'🥳', x:92, y:38},
+      {text:'🍬', x:16, y:82}, {text:'✨', x:38, y:54}, {text:'🎊', x:66, y:82}, {text:'🍭', x:80, y:50}
+    ])}<div class="sc-emoji">🎉</div></div>`,
+    spicy: `<div class="sc sc-spicy"><img class="sc-bg" src="bg-spicy.png" alt="">${motionLines(7)}<div class="glow-center"></div><div class="pulse-ring" style="width:28px;height:28px;animation-delay:0s"></div><div class="pulse-ring" style="width:28px;height:28px;animation-delay:0.37s"></div><div class="pulse-ring" style="width:28px;height:28px;animation-delay:0.74s"></div>${objects([
+      {text:'🔥', x:9, y:20, size:1.25}, {text:'⚡', x:20, y:72}, {text:'🌶️', x:31, y:34}, {text:'💥', x:44, y:80, size:1.2},
+      {text:'🚨', x:58, y:24}, {text:'🔥', x:69, y:64}, {text:'⚡', x:82, y:18, size:1.18}, {text:'🤯', x:92, y:74, size:1.24},
+      {text:'🌶️', x:14, y:48}, {text:'💥', x:36, y:58}, {text:'🔥', x:62, y:86}, {text:'⚡', x:84, y:45}
+    ])}<div class="sc-emoji">🔥</div></div>`,
+    bitter: `<div class="sc sc-bitter"><img class="sc-bg" src="bg-bitter.png" alt=""><div class="blood-flash"></div>${objects([
+      {text:'👁️', x:10, y:24, size:1.22}, {text:'⛓️', x:21, y:72}, {text:'🕳️', x:33, y:30, size:1.1}, {text:'🫣', x:46, y:78},
+      {text:'🕯️', x:57, y:22}, {text:'👻', x:70, y:64, size:1.25}, {text:'🦷', x:82, y:34}, {text:'🖤', x:92, y:78},
+      {text:'👁️', x:14, y:52}, {text:'⛓️', x:40, y:58}, {text:'🕳️', x:66, y:86}, {text:'👻', x:84, y:52}
+    ])}<div class="sc-emoji">👁️</div></div>`,
+    sour: `<div class="sc sc-sour"><img class="sc-bg" src="bg-sour.png" alt="">${motionLines(5)}${objects([
+      {text:'😱', x:9, y:22, size:1.25}, {text:'⚠️', x:20, y:70}, {text:'🍋', x:32, y:28}, {text:'💢', x:45, y:76},
+      {text:'‼️', x:58, y:24, size:1.2}, {text:'😳', x:69, y:62}, {text:'⚡', x:82, y:18}, {text:'🍋', x:92, y:72},
+      {text:'🚨', x:14, y:50}, {text:'😵', x:36, y:58}, {text:'⚠️', x:62, y:84}, {text:'💥', x:84, y:46}
+    ])}<div class="sc-emoji">😱</div></div>`,
+    shower: `<div class="sc sc-shower"><div class="ripple-ring" style="animation-delay:0s"></div><div class="ripple-ring" style="animation-delay:0.6s"></div><div class="ripple-ring" style="animation-delay:1.2s"></div><div class="ripple-ring" style="animation-delay:1.8s"></div>${objects([
+      {text:'🫧', x:14, y:24}, {text:'🧼', x:78, y:20}, {text:'🫧', x:24, y:72}, {text:'🧼', x:80, y:68},
+      {text:'🫧', x:52, y:18}, {text:'🫧', x:62, y:78}
+    ])}<div class="sc-emoji">🫧</div></div>`,
+    clean: `<div class="sc sc-clean">${objects([
+      {text:'✨', x:14, y:24}, {text:'🫧', x:78, y:20}, {text:'✨', x:24, y:72}, {text:'🫧', x:80, y:68},
+      {text:'✨', x:52, y:18}, {text:'🫧', x:62, y:78}
+    ])}<div class="sc-emoji">✨</div></div>`,
+  };
+
+  mScreen.innerHTML = scenes[type] || `<div class="sc sc-idle"><span class="idle-cursor">_</span></div>`;
+  scenePhysics.start(type);
+}
+
+// ─── Reaction message ─────────────────────────────────
+let msgTimer;
+function showMsg(text) {
+  clearTimeout(msgTimer);
+  msgEl.textContent = text;
+  msgEl.classList.add('show');
+  msgTimer = setTimeout(() => msgEl.classList.remove('show'), 2600);
+}
+
+let heroTypeTimer;
+const HERO_MSG_CLASSES = ['msg-salty', 'msg-sweet', 'msg-spicy', 'msg-bitter', 'msg-sour'];
+function typeHero(text, layoutType) {
+  clearTimeout(heroTypeTimer);
+  heroWord.textContent = '';
+  heroWord.classList.toggle('is-message', text !== 'Brain Shower');
+  heroWord.classList.remove(...HERO_MSG_CLASSES);
+  if (layoutType && HERO_MSG_CLASSES.includes(`msg-${layoutType}`)) {
+    heroWord.classList.add(`msg-${layoutType}`);
+  }
+  heroWord.classList.add('is-typing');
+
+  let i = 0;
+  const tick = () => {
+    const chunk = text.slice(0, i);
+    heroWord.innerHTML = chunk.replace(/\n/g, '<br>');
+    if (i < text.length) {
+      i++;
+      heroTypeTimer = setTimeout(tick, 52);
+    } else {
+      heroTypeTimer = setTimeout(() => {
+        heroWord.classList.remove('is-typing');
+      }, 900);
+    }
+  };
+  tick();
+}
+
+// ─── Ripple ───────────────────────────────────────────
+function spawnRipple(color) {
+  const r = document.createElement('div');
+  r.className = 'ripple';
+  r.style.color = color;
+  brainEl.appendChild(r);
+  setTimeout(() => r.remove(), 700);
+}
+
+// ─── Brain anim ───────────────────────────────────────
+function triggerAnim(name) {
+  brainEl.className = brainEl.className.replace(/do-\S+/g, '').trim();
+  void brainEl.offsetWidth;
+  brainEl.classList.add(`do-${name}`);
+  setTimeout(() => {
+    brainEl.classList.remove(`do-${name}`);
+    if (showerMode) brainEl.classList.add('scrub-mode');
+  }, 950);
+}
+
+// ─── Feed (food) ──────────────────────────────────────
+function feed(type) {
+  const cfg = FOOD[type];
+  if (!cfg) return;
+  renderScene(type);
+  if (feeds < ROTTEN_AT) feeds++;
+  applyState();
+  triggerAnim(cfg.anim);
+  spawnRipple(STATES[phase].fold);
+  showMsg(cfg.msg);
+  typeHero(FOOD_TITLES[type] || 'Every scroll\nis a meal.', type);
+  glowEl.style.background = `radial-gradient(ellipse, ${cfg.glow} 0%, rgba(0,0,0,0.035) 48%, transparent 72%)`;
+}
+
+// ─── Clean brain (shower complete) ───────────────────
+function triggerClean() {
+  feeds = 0;
+  applyState();
+  triggerAnim('shower');
+  spawnRipple('#4dd0e1');
+  renderScene('clean');
+  typeHero('Your brain\njust breath.');
+  brainSvg.style.filter = 'drop-shadow(0 10px 36px rgba(77,208,225,0.75))';
+  setTimeout(() => {
+    brainSvg.style.filter = `drop-shadow(0 10px 28px ${STATES[phase].shadow})`;
+  }, 1200);
+  showMsg('🧘 마음이 맑아졌어요.');
+  glowEl.style.background = 'radial-gradient(ellipse, rgba(77,208,225,0.18) 0%, rgba(0,0,0,0.035) 48%, transparent 72%)';
+  strokeCount = 0;
+  updateStrokeDots();
+}
+
+// ─── Brush cursor ─────────────────────────────────────
+// Total brush height ≈ 80px. We position so bristle tips (bottom) sit at cursor.
+const BRUSH_H = 80; // handle(50) + ferrule(8) + head(22)
+
+function moveBrush(x, y, dx) {
+  // Tilt follows movement direction
+  if      (dx >  4) brushAngle = brushAngle * 0.6 + 22 * 0.4;
+  else if (dx < -4) brushAngle = brushAngle * 0.6 - 22 * 0.4;
+  else              brushAngle = brushAngle * 0.85;
+
+  brushEl.style.left      = x + 'px';
+  brushEl.style.top       = (y - BRUSH_H) + 'px';
+  brushEl.style.transform = `translateX(-50%) rotate(${brushAngle}deg)`;
+  brushEl.style.transformOrigin = 'bottom center';
+}
+
+function showBrush() { brushEl.classList.add('show'); }
+function hideBrush() { brushEl.classList.remove('show'); }
+
+// ─── Foam particles ───────────────────────────────────
+function spawnFoam(x, y) {
+  const now = Date.now();
+  if (now - foamThrottle < 35) return;
+  foamThrottle = now;
+
+  for (let i = 0; i < 2; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'foam-dot';
+    const size = 3 + Math.random() * 9;
+    const ox   = (Math.random() - 0.5) * 32;
+    const oy   = (Math.random() - 0.5) * 20;
+    const dur  = 0.7 + Math.random() * 0.4;
+    dot.style.cssText =
+      `left:${x + ox - size/2}px;top:${y + oy - size/2}px;` +
+      `width:${size}px;height:${size}px;animation-duration:${dur}s`;
+    document.body.appendChild(dot);
+    setTimeout(() => dot.remove(), dur * 1000);
+  }
+}
+
+// ─── Scrub interaction ────────────────────────────────
+
+// Show brush on hover (shower mode only)
+brainEl.addEventListener('pointerenter', e => {
+  if (!showerMode) return;
+  showBrush();
+  moveBrush(e.clientX, e.clientY, 0);
+});
+
+brainEl.addEventListener('pointerleave', e => {
+  if (!isScrubbing) hideBrush();
+});
+
+// Pointer down → start stroke
+brainEl.addEventListener('pointerdown', e => {
+  if (!showerMode) return;
+  e.preventDefault();
+  isScrubbing = true;
+  scrubStartX = e.clientX;
+  scrubStartY = e.clientY;
+  scrubMoved  = 0;
+  lastPtrX    = e.clientX;
+  brainEl.classList.add('scrubbing');
+  brainEl.setPointerCapture(e.pointerId);
+
+  // Flash shower background while dragging
+  scrubFlashEl.classList.remove('fading');
+  scrubFlashEl.classList.add('active');
+
+  // Reveal shower brain & text on first touch (not waiting for stroke end)
+  if (!showerStarted) {
+    showerStarted = true;
+    brainImg.src = CHARACTER_IMAGES.shower;
+    brainImg.dataset.src = CHARACTER_IMAGES.shower;
+    typeHero('Wash me\nnow.');
+  }
+});
+
+// Pointer move → update brush + foam + measure distance
+document.addEventListener('pointermove', e => {
+  if (showerMode) e.preventDefault();
+  if (showerMode) {
+    const dx = e.clientX - lastPtrX;
+    moveBrush(e.clientX, e.clientY, dx);
+    lastPtrX = e.clientX;
+  }
+  if (!isScrubbing) return;
+
+  const dx = e.clientX - scrubStartX;
+  const dy = e.clientY - scrubStartY;
+  scrubMoved = Math.sqrt(dx * dx + dy * dy);
+  spawnFoam(e.clientX, e.clientY);
+});
+
+// Pointer up → evaluate stroke
+document.addEventListener('pointerup', e => {
+  if (!isScrubbing) return;
+  isScrubbing = false;
+  brainEl.classList.remove('scrubbing');
+
+  // Fade out scrub flash
+  scrubFlashEl.classList.remove('active');
+  scrubFlashEl.classList.add('fading');
+  setTimeout(() => scrubFlashEl.classList.remove('fading'), 450);
+
+  if (scrubMoved >= MIN_SWIPE_PX) {
+    strokeCount = Math.min(strokeCount + 1, STROKES_NEEDED);
+    updateStrokeDots();
+
+    if (strokeCount >= STROKES_NEEDED) {
+      triggerClean();
+    }
+  }
+
+  // Hide brush if pointer left the brain
+  const r = brainEl.getBoundingClientRect();
+  if (e.clientX < r.left || e.clientX > r.right ||
+      e.clientY < r.top  || e.clientY > r.bottom) {
+    hideBrush();
+  }
+});
+
+// ─── Food drag & drop ─────────────────────────────────
+let dragType  = null;
+let dragGhost = null;
+
+document.querySelectorAll('.food-item').forEach(item => {
+  // Click to feed (fallback for all platforms)
+  item.addEventListener('click', () => {
+    if (showerMode) return;
+    feed(item.dataset.type);
+  });
+
+  item.addEventListener('dragstart', e => {
+    dragType = item.dataset.type;
+    e.dataTransfer.effectAllowed = 'copy';
+    dragGhost = document.createElement('div');
+    dragGhost.className = 'drag-ghost';
+    dragGhost.textContent = item.querySelector('.food-icon').textContent.trim();
+    document.body.appendChild(dragGhost);
+    // Use a canvas in the DOM to suppress default drag image (Firefox-compatible)
+    const blank = document.createElement('canvas');
+    blank.width = blank.height = 1;
+    document.body.appendChild(blank);
+    e.dataTransfer.setDragImage(blank, 0, 0);
+    requestAnimationFrame(() => blank.remove());
+  });
+  item.addEventListener('dragend', () => {
+    dragGhost?.remove(); dragGhost = null;
+    brainEl.classList.remove('drag-over');
+  });
+});
+
+document.addEventListener('dragover', e => {
+  if (dragGhost) {
+    dragGhost.style.left = (e.clientX - 22) + 'px';
+    dragGhost.style.top  = (e.clientY - 22) + 'px';
+  }
+});
+
+brainEl.addEventListener('dragover',  e => {
+  if (showerMode) return;
+  e.preventDefault();
+  brainEl.classList.add('drag-over');
+});
+brainEl.addEventListener('dragleave', () => brainEl.classList.remove('drag-over'));
+brainEl.addEventListener('drop', e => {
+  e.preventDefault();
+  brainEl.classList.remove('drag-over');
+  if (dragType && !showerMode) feed(dragType);
+});
+
+// ─── Touch drag (food) ────────────────────────────────
+let touchType  = null;
+let touchGhost = null;
+
+document.querySelectorAll('.food-item').forEach(item => {
+  item.addEventListener('touchstart', e => {
+    touchType = item.dataset.type;
+    const t = e.touches[0];
+    touchGhost = document.createElement('div');
+    touchGhost.className = 'drag-ghost';
+    touchGhost.textContent = item.querySelector('.food-icon').textContent.trim();
+    touchGhost.style.left = (t.clientX - 22) + 'px';
+    touchGhost.style.top  = (t.clientY - 22) + 'px';
+    document.body.appendChild(touchGhost);
+    e.preventDefault();
+  }, { passive: false });
+
+  item.addEventListener('touchmove', e => {
+    const t = e.touches[0];
+    if (touchGhost) {
+      touchGhost.style.left = (t.clientX - 22) + 'px';
+      touchGhost.style.top  = (t.clientY - 22) + 'px';
+    }
+    const r = brainEl.getBoundingClientRect();
+    brainEl.classList.toggle('drag-over',
+      !showerMode &&
+      t.clientX >= r.left && t.clientX <= r.right &&
+      t.clientY >= r.top  && t.clientY <= r.bottom);
+    e.preventDefault();
+  }, { passive: false });
+
+  item.addEventListener('touchend', e => {
+    touchGhost?.remove(); touchGhost = null;
+    const t = e.changedTouches[0];
+    const r = brainEl.getBoundingClientRect();
+    if (!showerMode &&
+        t.clientX >= r.left && t.clientX <= r.right &&
+        t.clientY >= r.top  && t.clientY <= r.bottom) feed(touchType);
+    brainEl.classList.remove('drag-over');
+    touchType = null;
+  });
+});
+
+// ─── Init ─────────────────────────────────────────────
+applyState();
+</script>
+</body>
+</html>
