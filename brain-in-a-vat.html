@@ -107,14 +107,81 @@ body {
   left: -18px;
   right: -28px;
   top: 192px;
-  z-index: 0;
+  z-index: 1;
   font-size: 8rem;
   line-height: 0.82;
   font-weight: 950;
   letter-spacing: 0;
-  color: #111;
+  color: rgba(17,17,17,0.93);
   white-space: nowrap;
   pointer-events: none;
+}
+
+.scene-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  background: transparent;
+  pointer-events: none;
+}
+.scene-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background:
+    radial-gradient(circle at 50% 47%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.42) 46%, rgba(255,255,255,0.72) 100%),
+    linear-gradient(90deg, rgba(255,255,255,0.48), rgba(255,255,255,0.04) 42%, rgba(255,255,255,0.34));
+}
+.scene-backdrop .sc {
+  inset: -1px;
+}
+.scene-backdrop .sc-idle {
+  background: transparent;
+}
+.scene-backdrop .idle-cursor {
+  display: none;
+}
+.scene-backdrop .sc-tag {
+  top: 126px;
+  left: 44px;
+  font-size: 0.68rem;
+  background: rgba(255,255,255,0.58);
+}
+.scene-backdrop .sc-emoji {
+  font-size: clamp(7rem, 19vw, 18rem);
+  opacity: 0.2;
+  filter: blur(0.2px) saturate(0.95);
+}
+.scene-backdrop .drop {
+  width: 2px;
+  height: 28px;
+  opacity: 0.7;
+}
+.scene-backdrop .firework {
+  opacity: 0.72;
+}
+.scene-backdrop .glow-center {
+  width: 260px;
+  height: 260px;
+}
+.scene-backdrop .pulse-ring {
+  width: 130px !important;
+  height: 130px !important;
+}
+.scene-backdrop .news-bar {
+  bottom: 42px;
+  left: 42px;
+  right: 42px;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.7rem;
+}
+.scene-backdrop .shower-label {
+  bottom: 92px;
+  font-size: 0.72rem;
 }
 
 .glow {
@@ -163,7 +230,7 @@ header p  { max-width: 230px; font-size: 0.72rem; color: #7f7f7a; margin-top: 8p
 
 /* ── Monitor ── */
 .monitor {
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   width: 0;
@@ -961,6 +1028,9 @@ header p  { max-width: 230px; font-size: 0.72rem; color: #7f7f7a; margin-top: 8p
   <span>◌</span>
   <span>♙</span>
 </div>
+<div class="scene-backdrop" id="mScreen" aria-hidden="true">
+  <div class="sc sc-idle"><span class="idle-cursor">_</span></div>
+</div>
 <div class="hero-word">Brain Shower</div>
 
 <header>
@@ -974,7 +1044,7 @@ header p  { max-width: 230px; font-size: 0.72rem; color: #7f7f7a; margin-top: 8p
     <!-- Monitor -->
     <div class="monitor" id="monitor">
       <div class="m-body">
-        <div class="m-screen" id="mScreen">
+        <div class="m-screen">
           <div class="sc sc-idle"><span class="idle-cursor">_</span></div>
         </div>
         <div class="m-footer"><div class="m-cam"></div></div>
