@@ -1424,19 +1424,16 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 
     if (showerMode) {
       brainEl.classList.add('scrub-mode');
-      showerStarted = false; // reset — brain/text only change after first stroke
+      showerStarted = false; // reset — brain/text only change after first touch
     } else {
+      // Leaving shower tab — only deactivate brush/scrub UI
+      // Brain image and hero text are intentionally preserved
       brainEl.classList.remove('scrub-mode');
       hideBrush();
       showerStarted = false;
-      // Restore state-based brain image
-      setCharacterImage(phase);
       strokeCount = 0;
       updateStrokeDots();
-      // Restore initial hero text layout
-      heroWord.innerHTML = '<div class="hw-line"><span>Every</span><span>scroll</span></div><div class="hw-line"><span>is</span><span>a meal.</span></div>';
-      heroWord.classList.remove('is-message', 'is-typing', 'is-shower-text', ...HERO_MSG_CLASSES);
-      // Hide scrub flash
+      // Hide shower background
       scrubFlashEl.classList.remove('active', 'fading');
     }
   });
