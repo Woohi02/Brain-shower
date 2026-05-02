@@ -124,6 +124,39 @@ body {
   white-space: normal;
   text-wrap: balance;
 }
+.hero-word.msg-salty {
+  top: 126px;
+  right: auto;
+  max-width: min(430px, 43%);
+  font-size: clamp(3rem, 5.6vw, 5.4rem);
+}
+.hero-word.msg-sweet {
+  top: 124px;
+  left: auto;
+  max-width: min(430px, 42%);
+  text-align: right;
+  font-size: clamp(3rem, 5.5vw, 5.3rem);
+}
+.hero-word.msg-spicy {
+  top: 106px;
+  right: auto;
+  max-width: min(620px, 58%);
+  font-size: clamp(3rem, 5.2vw, 5rem);
+}
+.hero-word.msg-bitter {
+  top: 96px;
+  right: auto;
+  max-width: min(600px, 56%);
+  font-size: clamp(2.55rem, 4.85vw, 4.7rem);
+  line-height: 0.92;
+}
+.hero-word.msg-sour {
+  top: 132px;
+  left: auto;
+  max-width: min(420px, 40%);
+  text-align: right;
+  font-size: clamp(3rem, 5.6vw, 5.4rem);
+}
 .hero-word.is-typing::after {
   content: '';
   display: inline-block;
@@ -646,6 +679,15 @@ header p  { max-width: 230px; font-size: 0.72rem; color: #7f7f7a; margin-top: 8p
     left: var(--page-margin);
     right: var(--page-margin);
     font-size: 4.3rem;
+  }
+  .hero-word.is-message {
+    top: 132px;
+    left: var(--page-margin);
+    right: var(--page-margin);
+    max-width: calc(100% - var(--page-margin) * 2);
+    text-align: left;
+    font-size: clamp(2.6rem, 12vw, 4.1rem);
+    line-height: 0.94;
   }
   header {
     left: 18px;
@@ -1490,10 +1532,15 @@ function showMsg(text) {
 }
 
 let heroTypeTimer;
-function typeHero(text) {
+const HERO_MSG_CLASSES = ['msg-salty', 'msg-sweet', 'msg-spicy', 'msg-bitter', 'msg-sour'];
+function typeHero(text, layoutType) {
   clearTimeout(heroTypeTimer);
   heroWord.textContent = '';
   heroWord.classList.toggle('is-message', text !== 'Brain Shower');
+  heroWord.classList.remove(...HERO_MSG_CLASSES);
+  if (layoutType && HERO_MSG_CLASSES.includes(`msg-${layoutType}`)) {
+    heroWord.classList.add(`msg-${layoutType}`);
+  }
   heroWord.classList.add('is-typing');
 
   let i = 0;
@@ -1541,7 +1588,7 @@ function feed(type) {
   triggerAnim(cfg.anim);
   spawnRipple(STATES[phase].fold);
   showMsg(cfg.msg);
-  typeHero(FOOD_TITLES[type] || 'Brain Shower');
+  typeHero(FOOD_TITLES[type] || 'Brain Shower', type);
   glowEl.style.background = `radial-gradient(ellipse, ${cfg.glow} 0%, rgba(0,0,0,0.035) 48%, transparent 72%)`;
 }
 
