@@ -1839,6 +1839,8 @@ function triggerClean() {
   triggerAnim('shower');
   spawnRipple('#4dd0e1');
   renderScene('clean');
+  // Hide shower background when clean is done
+  scrubFlashEl.classList.remove('active', 'fading');
   typeHero('Your brain\njust breath.');
   brainSvg.style.filter = 'drop-shadow(0 10px 36px rgba(77,208,225,0.75))';
   setTimeout(() => {
@@ -1950,10 +1952,12 @@ document.addEventListener('pointerup', e => {
   isScrubbing = false;
   brainEl.classList.remove('scrubbing');
 
-  // Fade out scrub flash
-  scrubFlashEl.classList.remove('active');
-  scrubFlashEl.classList.add('fading');
-  setTimeout(() => scrubFlashEl.classList.remove('fading'), 450);
+  // Keep shower background visible once character has switched to shower state
+  if (!showerStarted) {
+    scrubFlashEl.classList.remove('active');
+    scrubFlashEl.classList.add('fading');
+    setTimeout(() => scrubFlashEl.classList.remove('fading'), 450);
+  }
 
   if (scrubMoved >= MIN_SWIPE_PX) {
     strokeCount = Math.min(strokeCount + 1, STROKES_NEEDED);
