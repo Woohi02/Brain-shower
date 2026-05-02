@@ -253,6 +253,11 @@ body {
   color: #ffffff;
   transition: color 0.4s ease;
 }
+/* Shower hero text always black regardless of scene theme */
+.hero-word.is-shower-text {
+  color: #111 !important;
+  transition: color 0.3s ease;
+}
 .web-page[data-theme="dark"] header p {
   color: rgba(255,255,255,0.7);
 }
@@ -1420,7 +1425,6 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     if (showerMode) {
       brainEl.classList.add('scrub-mode');
       showerStarted = false; // reset — brain/text only change after first stroke
-      webPage.dataset.theme = 'light'; // always light text in shower
     } else {
       brainEl.classList.remove('scrub-mode');
       hideBrush();
@@ -1431,7 +1435,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
       updateStrokeDots();
       // Restore initial hero text layout
       heroWord.innerHTML = '<div class="hw-line"><span>Every</span><span>scroll</span></div><div class="hw-line"><span>is</span><span>a meal.</span></div>';
-      heroWord.classList.remove('is-message', 'is-typing', ...HERO_MSG_CLASSES);
+      heroWord.classList.remove('is-message', 'is-typing', 'is-shower-text', ...HERO_MSG_CLASSES);
       // Hide scrub flash
       scrubFlashEl.classList.remove('active', 'fading');
     }
@@ -1943,6 +1947,7 @@ brainEl.addEventListener('pointerdown', e => {
     brainImg.src = CHARACTER_IMAGES.shower;
     brainImg.dataset.src = CHARACTER_IMAGES.shower;
     typeHero('Wash me\nnow.');
+    heroWord.classList.add('is-shower-text');
   }
 });
 
