@@ -494,7 +494,12 @@ header p  { max-width: 280px; font-size: 0.75rem; color: #7f7f7a; margin-top: 6p
   filter: drop-shadow(0 16px 28px rgba(201,87,24,0.18));
 }
 .brain-container.state-rotten .brain-character-img {
-  filter: drop-shadow(0 16px 28px rgba(72,104,28,0.18));
+  filter: drop-shadow(0 16px 28px rgba(80,55,40,0.22));
+}
+/* Shower character — scale up to match other characters' vertical span */
+.brain-container.is-shower .brain-character-img {
+  transform: scale(1.42);
+  transform-origin: center 55%;
 }
 .brain-container.state-overstimulated.scrubbing .brain-character-img {
   filter: drop-shadow(0 8px 28px rgba(77,208,225,0.65)) !important;
@@ -1328,13 +1333,14 @@ const STATES = {
     title:'과부하', desc:'너무 많은 자극이 쌓이고 있어요. 슬슬 위험해요.',
   },
   rotten: {
-    gs1:'#dff0a4', gs2:'#82ad4b', fold:'#5d7f33',
-    shadow:'rgba(72,104,28,0.36)',
-    blush:'#c0dd60', blushOp:'0.38',
-    mouth:'M 88,133 Q 94,128 100,133 Q 106,138 112,133', mouthStroke:'#7aaa28',
+    gs1:'#c8b4c0', gs2:'#7a5868',
+    fold:'#5a3a48',
+    shadow:'rgba(90,55,65,0.38)',
+    blush:'#b89aac', blushOp:'0.42',
+    mouth:'M 88,133 Q 94,128 100,133 Q 106,138 112,133', mouthStroke:'#7a5060',
     pupCy:'113', pupR:'5', eyeRx:'14', eyeRy:'13',
-    badge:'썩음 🤢', badgeColor:'#6f8a38',
-    glowBg:'rgba(72,104,28,0.12)', dotClass:'fed rotten',
+    badge:'썩음 🤢', badgeColor:'#7a5060',
+    glowBg:'rgba(90,55,65,0.13)', dotClass:'fed rotten',
     title:'썩음', desc:'과도한 콘텐츠로 뇌가 완전히 지쳐버렸어요.',
   },
 };
@@ -1856,8 +1862,9 @@ function triggerClean() {
   triggerAnim('shower');
   spawnRipple('#4dd0e1');
   renderScene('clean');
-  // Hide shower background when clean is done
+  // Hide shower background and shower scale when clean is done
   scrubFlashEl.classList.remove('active', 'fading');
+  brainEl.classList.remove('is-shower');
   typeHero('Your brain\njust breath.');
   brainSvg.style.filter = 'drop-shadow(0 10px 36px rgba(77,208,225,0.75))';
   setTimeout(() => {
@@ -1943,6 +1950,7 @@ brainEl.addEventListener('pointerdown', e => {
     showerStarted = true;
     brainImg.src = CHARACTER_IMAGES.shower;
     brainImg.dataset.src = CHARACTER_IMAGES.shower;
+    brainEl.classList.add('is-shower');
     typeHero('Wash me\nnow.');
     heroWord.classList.add('is-shower-text');
   }
