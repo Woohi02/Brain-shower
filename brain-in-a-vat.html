@@ -1075,38 +1075,8 @@ header p  { max-width: 280px; font-size: 0.75rem; color: #7f7f7a; margin-top: 6p
   to  { transform: translateX(-250%); }
 }
 
-/* Shower */
-.sc-shower { background: linear-gradient(180deg, #bdf1ff 0%, #f7fffa 52%, #a2cf83 53%, #6b9b52 100%); }
-.sc-shower .sc-tag { background: rgba(255,255,255,0.72); color: rgba(0,100,100,0.7); }
 .sc-clean { background: #ffffff; }
 .sc-clean .sc-tag { background: rgba(255,255,255,0.9); color: rgba(0,0,0,0.5); }
-.ripple-ring {
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(0,150,136,0.45);
-  animation: expand-ripple 2.4s ease-out infinite;
-  opacity: 0;
-}
-@keyframes expand-ripple {
-  0%  { transform: translate(-50%,-50%) scale(0.5); opacity: 0.75; }
-  100%{ transform: translate(-50%,-50%) scale(5);   opacity: 0;    }
-}
-.sc-shower .sc-emoji { animation: float-calm 3s ease-in-out infinite; }
-@keyframes float-calm {
-  0%,100%{transform:translateY(0)    scale(1)   }
-  50%    {transform:translateY(-6px) scale(1.05)}
-}
-.shower-label {
-  position: absolute;
-  bottom: 7px;
-  font-size: 0.4rem;
-  color: rgba(0,100,100,0.6);
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  z-index: 2;
-}
 </style>
 </head>
 <body>
@@ -1772,10 +1742,6 @@ function renderScene(type) {
       {text:'‼️', x:58, y:24, size:1.2}, {text:'😳', x:69, y:62}, {text:'⚡', x:82, y:18}, {text:'🍋', x:92, y:72},
       {text:'🚨', x:14, y:50}, {text:'😵', x:36, y:58}, {text:'⚠️', x:62, y:84}, {text:'💥', x:84, y:46}
     ])}<div class="sc-emoji">😱</div></div>`,
-    shower: `<div class="sc sc-shower"><div class="ripple-ring" style="animation-delay:0s"></div><div class="ripple-ring" style="animation-delay:0.6s"></div><div class="ripple-ring" style="animation-delay:1.2s"></div><div class="ripple-ring" style="animation-delay:1.8s"></div>${objects([
-      {text:'🫧', x:14, y:24}, {text:'🧼', x:78, y:20}, {text:'🫧', x:24, y:72}, {text:'🧼', x:80, y:68},
-      {text:'🫧', x:52, y:18}, {text:'🫧', x:62, y:78}
-    ])}<div class="sc-emoji">🫧</div></div>`,
     clean: `<div class="sc sc-clean">${objects([
       {text:'✨', x:14, y:24}, {text:'🫧', x:78, y:20}, {text:'✨', x:24, y:72}, {text:'🫧', x:80, y:68},
       {text:'✨', x:52, y:18}, {text:'🫧', x:62, y:78}
