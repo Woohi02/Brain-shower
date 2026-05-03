@@ -1441,6 +1441,8 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
       updateStrokeDots();
       // Hide shower background
       scrubFlashEl.classList.remove('active', 'fading');
+      // Remove forced-black override so dark scenes restore white text
+      heroWord.classList.remove('is-shower-text');
     }
   });
 });
